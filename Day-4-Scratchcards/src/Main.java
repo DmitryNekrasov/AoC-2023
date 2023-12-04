@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+    private final List<Integer> counts = new ArrayList<>();
     private Set<Integer> stringNumbersToSet(String str) {
         return Set.copyOf(stringNumbersToList(str));
     }
@@ -40,16 +41,35 @@ public class Main {
         var winningNumbers = stringNumbersToSet(st.nextToken());
         var myNumbers = stringNumbersToList(st.nextToken());
         int winningCount = winningNumbersCount(winningNumbers, myNumbers);
+        counts.add(winningCount);
         return pow2(winningCount - 1);
+    }
+
+    private int solvePartTwo() {
+        int n = counts.size();
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < counts.get(i); j++) {
+                dp[i + 1 + j] += dp[i];
+            }
+        }
+        int result = 0;
+        for (var num : dp) {
+            result += num;
+        }
+        return result;
     }
     private void solve() throws IOException {
         String line = in.readLine();
-        int ans = 0;
+        int ansPartOne = 0;
         while (line != null) {
-            ans += solveLine(line);
+            ansPartOne += solveLine(line);
             line = in.readLine();
         }
-        System.out.println(ans);
+        System.out.println(ansPartOne);
+        int ansPartTwo = solvePartTwo();
+        System.out.println(ansPartTwo);
     }
 
     public static void main(String[] args) throws IOException {
