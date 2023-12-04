@@ -3,6 +3,7 @@ import java.util.*;
 
 public class Main {
     private final List<Integer> counts = new ArrayList<>();
+
     private Set<Integer> stringNumbersToSet(String str) {
         return Set.copyOf(stringNumbersToList(str));
     }
@@ -60,6 +61,7 @@ public class Main {
         }
         return result;
     }
+
     private void solve() throws IOException {
         String line = in.readLine();
         int ansPartOne = 0;
@@ -77,6 +79,7 @@ public class Main {
     }
 
     private BufferedReader in;
+
     private void run() throws IOException {
         in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
         solve();
