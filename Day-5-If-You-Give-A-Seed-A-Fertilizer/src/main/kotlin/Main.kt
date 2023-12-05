@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
         typeToMappings[source] = mappings
     }
 
-    var ansPart1 = Long.MAX_VALUE;
+    var ansPart1 = Long.MAX_VALUE
     for (seed in seeds) {
         var type = "seed"
         var value = seed
