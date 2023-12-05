@@ -1,4 +1,5 @@
 import java.io.File
+import kotlin.math.min
 
 data class Range(val start: Long, val length: Long) {
     operator fun contains(value: Long): Boolean = value in start..<start + length
@@ -24,7 +25,7 @@ fun main(args: Array<String>) {
         typeToMappings[source] = mappings
     }
 
-    val locations = mutableListOf<Long>()
+    var ansPart1 = Long.MAX_VALUE;
     for (seed in seeds) {
         var type = "seed"
         var value = seed
@@ -40,8 +41,7 @@ fun main(args: Array<String>) {
             value = nextValue
             type = relationship[type]!!
         }
-        locations.add(value)
+        ansPart1 = min(ansPart1, value)
     }
-    val ansPart1 = locations.min()
     println(ansPart1)
 }
