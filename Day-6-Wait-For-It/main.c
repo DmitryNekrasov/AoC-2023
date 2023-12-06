@@ -40,5 +40,6 @@ int main(int argc, char** argv) {
     }
     printf("%d", ans);
 
+    fclose(fptr);
     return 0;
 }
