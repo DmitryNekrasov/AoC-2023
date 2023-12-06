@@ -27,5 +27,18 @@ int main(int argc, char** argv) {
     get_values(times);
     int size = get_values(distances);
 
+    int ans = 1;
+    for (int test = 0; test < size; test++) {
+        int time = times[test], distance = distances[test];
+        int test_result = 0;
+        for (int i = 0; i <= time; i++) {
+            if (i * (time - i) > distance) {
+                test_result++;
+            }
+        }
+        ans *= test_result;
+    }
+    printf("%d", ans);
+
     return 0;
 }
