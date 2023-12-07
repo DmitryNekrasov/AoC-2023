@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    private static class Hand implements Comparable<Hand> {
+    private static class Hand {
         private static final Map<Character, Character> mapping;
 
         static {
@@ -16,17 +16,23 @@ public class Main {
             }
         }
 
-        private final String handStr;
+        private final String handStrPart1;
+        private final String handStrPart2;
         private final int bid;
-        private final int type;
+        private final int typePart1;
+        private final int typePart2;
 
         public Hand(String handStr, int bid) {
-            this.handStr = map(handStr);
+            mapping.put('J', 'J');
+            this.handStrPart1 = map(handStr);
+            mapping.put('J', (char) ('A' - 1));
+            this.handStrPart2 = map(handStr);
             this.bid = bid;
-            this.type = getType(handStr);
+            this.typePart1 = getTypePart1(handStr);
+            this.typePart2 = getTypePart2(handStr);
         }
 
-        private static int getType(String hand) {
+        private static int getTypePart1(String hand) {
             var dict = new HashMap<Character, Integer>();
             for (int i = 0; i < hand.length(); i++) {
                 char c = hand.charAt(i);
@@ -34,6 +40,31 @@ public class Main {
             }
             int type = 0, d = 10_000;
             for (int count : dict.values().stream().sorted(Comparator.reverseOrder()).toList()) {
+                type += count * d;
+                d /= 10;
+            }
+            return type;
+        }
+
+        private int getTypePart2(String hand) {
+            var dict = new HashMap<Character, Integer>();
+            int jCount = 0;
+            for (int i = 0; i < hand.length(); i++) {
+                char c = hand.charAt(i);
+                if (c == 'J') {
+                    jCount++;
+                } else {
+                    dict.put(c, dict.getOrDefault(c, 0) + 1);
+                }
+            }
+            var list = new ArrayList<>(dict.values().stream().sorted(Comparator.reverseOrder()).toList());
+            if (list.isEmpty()) {
+                list.add(jCount);
+            } else {
+                list.set(0, list.getFirst() + jCount);
+            }
+            int type = 0, d = 10_000;
+            for (int count : list) {
                 type += count * d;
                 d /= 10;
             }
@@ -50,20 +81,31 @@ public class Main {
 
         @Override
         public String toString() {
-            return handStr + ", " + bid + ", " + type;
-        }
-
-        @Override
-        public int compareTo(Hand o) {
-            if (type == o.type) {
-                return handStr.compareTo(o.handStr);
-            }
-            return Integer.compare(type, o.type);
+            return "(s1=" + handStrPart1 + ", s2=" + handStrPart2 + ", t1=" + typePart1 + ", t2=" + typePart2 + ", b=" + bid + ")";
         }
     }
 
     int solvePartOne(List<Hand> hands) {
-        Collections.sort(hands);
+        hands.sort((h1, h2) -> {
+            if (h1.typePart1 == h2.typePart1) {
+                return h1.handStrPart1.compareTo(h2.handStrPart1);
+            }
+            return Integer.compare(h1.typePart1, h2.typePart1);
+        });
+        int ans = 0;
+        for (int i = 0; i < hands.size(); i++) {
+            ans += (i + 1) * hands.get(i).bid;
+        }
+        return ans;
+    }
+
+    int solvePartTwo(List<Hand> hands) {
+        hands.sort((h1, h2) -> {
+            if (h1.typePart2 == h2.typePart2) {
+                return h1.handStrPart2.compareTo(h2.handStrPart2);
+            }
+            return Integer.compare(h1.typePart2, h2.typePart2);
+        });
         int ans = 0;
         for (int i = 0; i < hands.size(); i++) {
             ans += (i + 1) * hands.get(i).bid;
@@ -82,6 +124,8 @@ public class Main {
         }
         int ansPartOne = solvePartOne(hands);
         System.out.println(ansPartOne);
+        int ansPartTwo = solvePartTwo(hands);
+        System.out.println(ansPartTwo);
     }
 
     public static void main(String[] args) throws IOException {
