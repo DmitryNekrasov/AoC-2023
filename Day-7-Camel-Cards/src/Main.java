@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    private class Hand implements Comparable<Hand> {
+    private static class Hand implements Comparable<Hand> {
         private static final Map<Character, Character> mapping;
 
         static {
@@ -16,9 +16,9 @@ public class Main {
             }
         }
 
-        private String handStr;
-        private int bid;
-        private int type;
+        private final String handStr;
+        private final int bid;
+        private final int type;
 
         public Hand(String handStr, int bid) {
             this.handStr = map(handStr);
