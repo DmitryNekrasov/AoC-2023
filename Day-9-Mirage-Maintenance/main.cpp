@@ -22,19 +22,21 @@ vector<vector<int>> to_pyramid(const vector<int> &values) {
     return result;
 }
 
-int solve(const vector<int> &values) {
+pair<int, int> solve(const vector<int> &values) {
     auto pyramid = to_pyramid(values);
-    int result = 0;
+    int result_last = 0, result_first = 0, sg = 1;
     for (const auto& vec : pyramid) {
-        result += vec.back();
+        result_last += vec.back();
+        result_first += sg * vec.front();
+        sg = -sg;
     }
-    return result;
+    return make_pair(result_last, result_first);
 }
 
 int main(int argc, char **argv) {
     ifstream ifs(argv[1]);
     string line;
-    int ans_part_one = 0;
+    int ans_part_one = 0, ans_part_two = 0;
     while (getline(ifs, line)) {
         stringstream ss(line);
         int value;
@@ -42,8 +44,11 @@ int main(int argc, char **argv) {
         while (ss >> value) {
             values.push_back(value);
         }
-        ans_part_one += solve(values);
+        auto [result_last, result_first] = solve(values);
+        ans_part_one += result_last;
+        ans_part_two += result_first;
     }
     cout << ans_part_one << endl;
+    cout << ans_part_two << endl;
     return 0;
 }
