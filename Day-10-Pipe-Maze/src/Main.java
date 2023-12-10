@@ -141,7 +141,7 @@ public class Main {
     }
 
     private void printExtendedMaze(int[][] extendedMaze) {
-        int n = extendedMaze.length, m = extendedMaze[0].length;
+        int m = extendedMaze[0].length;
         for (int[] row : extendedMaze) {
             for (int j = 0; j < m; j++) {
                 System.out.print(row[j] == 1 ? "# " : "  ");
@@ -181,7 +181,6 @@ public class Main {
 
     private int solvePartTwo(char[][] maze) {
         var extendedMaze = toExtendedMaze(maze);
-        int n = maze.length, m = maze[0].length;
         bfs(extendedMaze);
         printExtendedMaze(extendedMaze);
         return countZeros(extendedMaze);
