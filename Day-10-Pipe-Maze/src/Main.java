@@ -136,7 +136,7 @@ public class Main {
     private BufferedReader in;
 
     private void run() throws IOException {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple_5.txt")));
         solve();
         in.close();
     }
