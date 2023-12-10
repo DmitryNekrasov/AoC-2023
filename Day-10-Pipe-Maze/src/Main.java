@@ -6,7 +6,47 @@ public class Main {
     private final static Map<Character, Character> printMapping =
             Map.of('F', '┌', '7', '┐', 'J', '┘', 'L', '└', '|', '│', '-', '─', 'S', 'S');
 
-    private record Point(int i, int j) {}
+    private final Map<Character, int[][]> extendedMapping =
+            Map.of(
+                    'F', new int[][]{
+                            {0, 0, 0},
+                            {0, 1, 1},
+                            {0, 1, 1}
+                    },
+                    '7', new int[][]{
+                            {0, 0, 0},
+                            {1, 1, 0},
+                            {0, 1, 0}
+                    },
+                    'J', new int[][]{
+                            {0, 1, 0},
+                            {1, 1, 0},
+                            {0, 0, 0}
+                    },
+                    'L', new int[][]{
+                            {0, 1, 0},
+                            {0, 1, 1},
+                            {0, 0, 0}
+                    },
+                    '|', new int[][]{
+                            {0, 1, 0},
+                            {0, 1, 0},
+                            {0, 1, 0}
+                    },
+                    '-', new int[][]{
+                            {0, 0, 0},
+                            {1, 1, 1},
+                            {0, 0, 0}
+                    },
+                    'S', new int[][]{
+                            {0, 1, 0},
+                            {1, 1, 1},
+                            {0, 1, 0}
+                    }
+            );
+
+    private record Point(int i, int j) {
+    }
 
     Point nextPoints(char[][] maze, Point prevPoint, Point currentPoint) {
         int i = currentPoint.i, j = currentPoint.j;
@@ -142,7 +182,7 @@ public class Main {
     private BufferedReader in;
 
     private void run() throws IOException {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple_3.txt")));
         solvePartOne();
         in.close();
     }
