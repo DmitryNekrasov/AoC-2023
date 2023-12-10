@@ -140,7 +140,7 @@ public class Main {
         return result;
     }
 
-    private void printExtendedMaz(int[][] extendedMaze) {
+    private void printExtendedMaze(int[][] extendedMaze) {
         int n = extendedMaze.length, m = extendedMaze[0].length;
         for (int[] row : extendedMaze) {
             for (int j = 0; j < m; j++) {
@@ -152,7 +152,7 @@ public class Main {
 
     private int solvePartTwo(char[][] maze) {
         var extendedMaze = toExtendedMaze(maze);
-        printExtendedMaz(extendedMaze);
+        printExtendedMaze(extendedMaze);
         return -1;
     }
 
