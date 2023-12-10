@@ -166,12 +166,25 @@ public class Main {
         }
     }
 
+    private int countZeros(int[][] extendedMaze) {
+        int n = extendedMaze.length, m = extendedMaze[0].length;
+        int result = 0;
+        for (int i = 1; i < n; i += 3) {
+            for (int j = 1; j < m; j += 3) {
+                if (extendedMaze[i][j] == 0) {
+                    result++;
+                }
+            }
+        }
+        return result;
+    }
+
     private int solvePartTwo(char[][] maze) {
         var extendedMaze = toExtendedMaze(maze);
         int n = maze.length, m = maze[0].length;
         bfs(extendedMaze);
         printExtendedMaze(extendedMaze);
-        return -1;
+        return countZeros(extendedMaze);
     }
 
     char[][] toCharArrays(List<String> maze) {
