@@ -11,7 +11,7 @@ public class Main {
                     'F', new int[][]{
                             {0, 0, 0},
                             {0, 1, 1},
-                            {0, 1, 1}
+                            {0, 1, 0}
                     },
                     '7', new int[][]{
                             {0, 0, 0},
@@ -123,7 +123,36 @@ public class Main {
         return stepCount / 2;
     }
 
+    private int[][] toExtendedMaze(char[][] maze) {
+        int n = maze.length, m = maze[0].length;
+        int[][] result = new int[n * 3][m * 3];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                char c = maze[i][j];
+                if (c != '.') {
+                    var mapTo = extendedMapping.get(c);
+                    for (int k = 0; k < 3; k++) {
+                        System.arraycopy(mapTo[k], 0, result[i * 3 + k], j * 3, 3);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private void printExtendedMaz(int[][] extendedMaze) {
+        int n = extendedMaze.length, m = extendedMaze[0].length;
+        for (int[] row : extendedMaze) {
+            for (int j = 0; j < m; j++) {
+                System.out.print(row[j] == 1 ? "# " : "  ");
+            }
+            System.out.println();
+        }
+    }
+
     private int solvePartTwo(char[][] maze) {
+        var extendedMaze = toExtendedMaze(maze);
+        printExtendedMaz(extendedMaze);
         return -1;
     }
 
@@ -182,7 +211,7 @@ public class Main {
     private BufferedReader in;
 
     private void run() throws IOException {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple_3.txt")));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
         solvePartOne();
         in.close();
     }
