@@ -218,7 +218,7 @@ public class Main {
         }
     }
 
-    private void solvePartOne() throws IOException {
+    private void solve() throws IOException {
         String line = in.readLine();
         var mazeAsList = new ArrayList<String>();
         while (line != null) {
@@ -242,7 +242,7 @@ public class Main {
 
     private void run() throws IOException {
         in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
-        solvePartOne();
+        solve();
         in.close();
     }
 }
