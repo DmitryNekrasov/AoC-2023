@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class Main {
-    private final static Map<Character, Character> mapping =
+    private final static Map<Character, Character> printMapping =
             Map.of('F', '┌', '7', '┐', 'J', '┘', 'L', '└', '|', '│', '-', '─', 'S', 'S');
 
     private record Point(int i, int j) {}
@@ -83,6 +83,10 @@ public class Main {
         return stepCount / 2;
     }
 
+    private int solvePartTwo(char[][] maze) {
+        return -1;
+    }
+
     char[][] toCharArrays(List<String> maze) {
         int n = maze.size(), m = maze.getFirst().length();
         char[][] result = new char[n][m];
@@ -98,7 +102,7 @@ public class Main {
             final int row = i;
             System.out.println(
                     IntStream.range(0, m).mapToObj(j -> maze[row][j])
-                            .map(c -> mapping.getOrDefault(c, ' '))
+                            .map(c -> printMapping.getOrDefault(c, ' '))
                             .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
             );
         }
@@ -127,6 +131,8 @@ public class Main {
         removeExtraWalls(maze);
         printMaze(maze);
         System.out.println(ansPartOne);
+        int ansPartTwo = solvePartTwo(maze);
+        System.out.println(ansPartTwo);
     }
 
     public static void main(String[] args) throws IOException {
@@ -136,7 +142,7 @@ public class Main {
     private BufferedReader in;
 
     private void run() throws IOException {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple_5.txt")));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
         solvePartOne();
         in.close();
     }
