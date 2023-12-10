@@ -64,7 +64,7 @@ public class Main {
         throw new RuntimeException();
     }
 
-    private Set<Point> walls = new HashSet<>();
+    private final Set<Point> walls = new HashSet<>();
 
     private int solve(char[][] maze) {
         var startPoint = getStartPoint(maze);
@@ -98,7 +98,7 @@ public class Main {
             final int row = i;
             System.out.println(
                     IntStream.range(0, m).mapToObj(j -> maze[row][j])
-                            .map(c -> mapping.getOrDefault((char) c, ' '))
+                            .map(c -> mapping.getOrDefault(c, ' '))
                             .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
             );
         }
