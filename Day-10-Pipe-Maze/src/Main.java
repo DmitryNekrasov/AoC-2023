@@ -150,8 +150,26 @@ public class Main {
         }
     }
 
+    private void bfs(int[][] extendedMaze) {
+        int n = extendedMaze.length, m = extendedMaze[0].length;
+        Queue<Point> queue = new LinkedList<>();
+        queue.offer(new Point(0, 0));
+        while (!queue.isEmpty()) {
+            var p = queue.poll();
+            int i = p.i, j = p.j;
+            if (i < 0 || i >= n || j < 0 || j >= m || extendedMaze[i][j] == 1) continue;
+            extendedMaze[i][j] = 1;
+            queue.offer(new Point(i + 1, j));
+            queue.offer(new Point(i - 1, j));
+            queue.offer(new Point(i, j + 1));
+            queue.offer(new Point(i, j - 1));
+        }
+    }
+
     private int solvePartTwo(char[][] maze) {
         var extendedMaze = toExtendedMaze(maze);
+        int n = maze.length, m = maze[0].length;
+        bfs(extendedMaze);
         printExtendedMaze(extendedMaze);
         return -1;
     }
