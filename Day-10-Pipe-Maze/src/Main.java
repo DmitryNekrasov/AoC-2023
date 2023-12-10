@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class Main {
@@ -67,14 +64,19 @@ public class Main {
         throw new RuntimeException();
     }
 
+    private Set<Point> walls = new HashSet<>();
+
     private int solve(char[][] maze) {
         var startPoint = getStartPoint(maze);
         var prevPoint = startPoint;
         var currentPoint = firstValidPoint(maze, prevPoint);
+        walls.add(prevPoint);
+        walls.add(currentPoint);
         int stepCount = 1;
         do {
             stepCount++;
             var nextPoint = nextPoints(maze, prevPoint, currentPoint);
+            walls.add(nextPoint);
             prevPoint = currentPoint;
             currentPoint = nextPoint;
         } while (!currentPoint.equals(startPoint));
@@ -102,6 +104,17 @@ public class Main {
         }
     }
 
+    private void removeExtraWalls(char[][] maze) {
+        int n = maze.length, m = maze[0].length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (!walls.contains(new Point(i, j))) {
+                    maze[i][j] = '.';
+                }
+            }
+        }
+    }
+
     private void solve() throws IOException {
         String line = in.readLine();
         var mazeAsList = new ArrayList<String>();
@@ -110,8 +123,9 @@ public class Main {
             line = in.readLine();
         }
         var maze = toCharArrays(mazeAsList);
-        printMaze(maze);
         int ansPartOne = solve(maze); // 6613
+        removeExtraWalls(maze);
+        printMaze(maze);
         System.out.println(ansPartOne);
     }
 
