@@ -66,7 +66,7 @@ public class Main {
 
     private final Set<Point> walls = new HashSet<>();
 
-    private int solve(char[][] maze) {
+    private int solvePartOne(char[][] maze) {
         var startPoint = getStartPoint(maze);
         var prevPoint = startPoint;
         var currentPoint = firstValidPoint(maze, prevPoint);
@@ -115,7 +115,7 @@ public class Main {
         }
     }
 
-    private void solve() throws IOException {
+    private void solvePartOne() throws IOException {
         String line = in.readLine();
         var mazeAsList = new ArrayList<String>();
         while (line != null) {
@@ -123,7 +123,7 @@ public class Main {
             line = in.readLine();
         }
         var maze = toCharArrays(mazeAsList);
-        int ansPartOne = solve(maze); // 6613
+        int ansPartOne = solvePartOne(maze); // 6613
         removeExtraWalls(maze);
         printMaze(maze);
         System.out.println(ansPartOne);
@@ -137,7 +137,7 @@ public class Main {
 
     private void run() throws IOException {
         in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple_5.txt")));
-        solve();
+        solvePartOne();
         in.close();
     }
 }
