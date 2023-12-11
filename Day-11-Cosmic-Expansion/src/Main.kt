@@ -27,20 +27,36 @@ fun List<String>.toGalaxyList() = this.withIndex()
     .map { (i, row) -> row.withIndex().filter { (_, c) -> c == '#' }.map { Galaxy(i, it.index) } }
     .flatten()
 
+fun sort(a: Int, b: Int) = if (a < b) a to b else b to a
+
 fun solve(image: List<String>): Int {
     val emptyRows = image.getEmptyRows()
     val emptyCols = image.getEmptyCols()
     val galaxyList = image.toGalaxyList()
-
-    println(emptyRows)
-    println(emptyCols)
-    println(galaxyList)
-
-    return -1
+    var totalDistance = 0
+    for (from in galaxyList) {
+        for (to in galaxyList) {
+            var distance = from.distance(to)
+            val (fromI, toI) = sort(from.i, to.i)
+            for (i in fromI + 1..<toI) {
+                if (i in emptyRows) {
+                    distance++
+                }
+            }
+            val (fromJ, toJ) = sort(from.j, to.j)
+            for (j in fromJ + 1..<toJ) {
+                if (j in emptyCols) {
+                    distance++
+                }
+            }
+            totalDistance += distance
+        }
+    }
+    return totalDistance / 2
 }
 
 fun main() {
-    val image = File("input_simple_1.txt").useLines { it.toList() }
+    val image = File("input.txt").useLines { it.toList() }
     val ansPartOne = solve(image)
     println(ansPartOne)
 }
