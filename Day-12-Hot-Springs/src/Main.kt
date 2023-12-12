@@ -1,24 +1,5 @@
 import java.io.File
 
-fun solvePartOne(spring: String, record: List<Int>): Int {
-    fun backtrack(spring: CharArray, index: Int): Int {
-        if (index == spring.size) {
-            return if (String(spring).split(".").filter { it.isNotEmpty() }.map { it.length } == record) 1 else 0
-        }
-        if (spring[index] == '?') {
-            spring[index] = '#'
-            val r1 = backtrack(spring, index + 1)
-            spring[index] = '.'
-            val r2 = backtrack(spring, index + 1)
-            spring[index] = '?'
-            return r1 + r2
-        } else {
-            return backtrack(spring, index + 1)
-        }
-    }
-    return backtrack(spring.toCharArray(), 0)
-}
-
 fun solve(initialSpring: String, initialRecord: List<Int>, times: Int): Long {
     val spring = List(times) { initialSpring }.joinToString("?") + "."
     val record = List(times) { initialRecord }.flatten()
@@ -50,7 +31,7 @@ fun solve(initialSpring: String, initialRecord: List<Int>, times: Int): Long {
         // Put hash
         result += calc(springIndex + 1, recordIndex, hashLen + 1)
         cache[triple] = result
-        return result;
+        return result
     }
     return calc(0, 0, 0)
 }
