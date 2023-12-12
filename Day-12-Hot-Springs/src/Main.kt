@@ -1,9 +1,22 @@
 import java.io.File
 
 fun solve(spring: String, record: List<Int>): Int {
-    println("$spring, $record")
-
-    return -1
+    fun backtrack(spring: CharArray, index: Int): Int {
+        if (index == spring.size) {
+            return if (String(spring).split(".").filter { it.isNotEmpty() }.map { it.length } == record) 1 else 0
+        }
+        if (spring[index] == '?') {
+            spring[index] = '#'
+            val r1 = backtrack(spring, index + 1)
+            spring[index] = '.'
+            val r2 = backtrack(spring, index + 1)
+            spring[index] = '?'
+            return r1 + r2
+        } else {
+            return backtrack(spring, index + 1)
+        }
+    }
+    return backtrack(spring.toCharArray(), 0)
 }
 
 fun main() {
