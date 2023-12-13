@@ -47,7 +47,7 @@ vector<vector<char>> transpose(const vector<vector<char>>& field) {
     return result;
 }
 
-int solve(const vector<vector<char>>& field) {
+unordered_set<int> solve(const vector<vector<char>>& field) {
     unordered_set<int> intersection;
     for (int i = 0, ei = int(field.front().size()); i < ei; i++) {
         intersection.insert(i);
@@ -56,12 +56,16 @@ int solve(const vector<vector<char>>& field) {
         auto palindrome_indices = get_palindrome_indices(row);
         intersect(intersection, palindrome_indices);
     }
-    return intersection.empty() ? 0 : *intersection.begin() + 1;
+    return intersection;
 }
 
-int solve_part_one(const vector<vector<char>>& field) {
-    int vertical = solve(field);
-    int horizontal = solve(transpose(field));
+int solve_part_one(const vector<vector<char>>& field, int last_vertical = 0, int last_horizontal = 0) {
+    auto intersection = solve(field);
+    intersection.erase(last_vertical - 1);
+    int vertical = intersection.empty() ? 0 : *intersection.begin() + 1;
+    intersection = solve(transpose(field));
+    intersection.erase(last_horizontal - 1);
+    int horizontal = intersection.empty() ? 0 : *intersection.begin() + 1;
     return vertical + 100 * horizontal;
 }
 
