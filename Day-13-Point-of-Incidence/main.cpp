@@ -59,14 +59,14 @@ unordered_set<int> solve(const vector<vector<char>>& field) {
     return intersection;
 }
 
-int solve_part_one(const vector<vector<char>>& field, int last_vertical = 0, int last_horizontal = 0) {
+pair<int, int> solve_part_one(const vector<vector<char>>& field, int last_vertical = 0, int last_horizontal = 0) {
     auto intersection = solve(field);
     intersection.erase(last_vertical - 1);
     int vertical = intersection.empty() ? 0 : *intersection.begin() + 1;
     intersection = solve(transpose(field));
     intersection.erase(last_horizontal - 1);
     int horizontal = intersection.empty() ? 0 : *intersection.begin() + 1;
-    return vertical + 100 * horizontal;
+    return make_pair(vertical, horizontal);
 }
 
 int main(int argc, char** argv) {
@@ -75,7 +75,8 @@ int main(int argc, char** argv) {
     vector<vector<char>> field;
     int ans_part_one = 0;
     auto calc = [&field, &ans_part_one]() {
-        ans_part_one += solve_part_one(field);
+        auto [vertical, horizontal] = solve_part_one(field);
+        ans_part_one += vertical + 100 * horizontal;
         field.clear();
     };
     while (getline(ifs, line)) {
