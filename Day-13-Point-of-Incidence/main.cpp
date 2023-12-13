@@ -59,15 +59,19 @@ int solve(const vector<vector<char>>& field) {
     return intersection.empty() ? 0 : *intersection.begin() + 1;
 }
 
+int solve_part_one(const vector<vector<char>>& field) {
+    int vertical = solve(field);
+    int horizontal = solve(transpose(field));
+    return vertical + 100 * horizontal;
+}
+
 int main(int argc, char** argv) {
     ifstream ifs(argv[1]);
     string line;
     vector<vector<char>> field;
     int ans_part_one = 0;
     auto calc = [&field, &ans_part_one]() {
-        int vertical = solve(field);
-        int horizontal = solve(transpose(field));
-        ans_part_one += vertical + 100 * horizontal;
+        ans_part_one += solve_part_one(field);
         field.clear();
     };
     while (getline(ifs, line)) {
