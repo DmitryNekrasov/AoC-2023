@@ -48,6 +48,7 @@ public class Main {
 
     private int solvePartOne(char[][] grid) {
         move(grid);
+        printGrid(grid);
         return getScore(grid);
     }
 
@@ -61,10 +62,9 @@ public class Main {
     }
 
     private void printGrid(char[][] grid) {
-        int n = grid.length;
-        for (char[] chars : grid) {
-            for (int j = 0; j < n; j++) {
-                System.out.print(chars[j]);
+        for (char[] row : grid) {
+            for (char c : row) {
+                System.out.print(c);
             }
             System.out.println();
         }
