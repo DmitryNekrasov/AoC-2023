@@ -71,11 +71,24 @@ public class Main {
         return getScore(grid);
     }
 
+    private static final long BASE = 31;
+
+    private long hash(char[][] grid) {
+        long h = 0;
+        for (char[] row : grid) {
+            for (char c : row) {
+                h = h * BASE + c;
+            }
+        }
+        return h;
+    }
+
     private int solvePartTwo(char[][] grid) {
         spinCycle(grid);
         spinCycle(grid);
         spinCycle(grid);
         printGrid(grid);
+        System.out.println(hash(grid));
         return -1;
     }
 
@@ -118,7 +131,7 @@ public class Main {
     private BufferedReader in;
 
     private void run() throws IOException {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple.txt")));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
         solve();
         in.close();
     }
