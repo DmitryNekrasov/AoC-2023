@@ -6,8 +6,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private void solvePartOne(char[][] grid) {
-        printGrid(grid);
+    private int getScore(char[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            int stoneCount = 0;
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 'O') {
+                    stoneCount++;
+                }
+            }
+            result += stoneCount * (n - i);
+        }
+        return result;
+    }
+
+    private int solvePartOne(char[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        for (int j = 0; j < m; j++) {
+            int p0 = 0;
+            while (p0 < n && grid[p0][j] != '.') {
+                p0++;
+            }
+            int p1 = p0 + 1;
+            while (p1 < n) {
+                if (grid[p1][j] == '.') {
+                    p1++;
+                } else if (grid[p1][j] == 'O') {
+                    grid[p0++][j] = 'O';
+                    grid[p1++][j] = '.';
+                } else {
+                    p0 = p1;
+                    while (p0 < n && grid[p0][j] != '.') {
+                        p0++;
+                    }
+                    p1 = p0 + 1;
+                }
+            }
+        }
+        return getScore(grid);
     }
 
     private char[][] asCharArray(List<String> gridList) {
@@ -20,10 +57,10 @@ public class Main {
     }
 
     private void printGrid(char[][] grid) {
-        int n = grid.length, m = grid[0].length;
-        for (int i = 0; i < n; i++) {
+        int m = grid[0].length;
+        for (char[] chars : grid) {
             for (int j = 0; j < m; j++) {
-                System.out.print(grid[i][j]);
+                System.out.print(chars[j]);
             }
             System.out.println();
         }
@@ -37,7 +74,8 @@ public class Main {
             line = in.readLine();
         }
         var grid = asCharArray(gridList);
-        solvePartOne(grid);
+        var ansPartOne = solvePartOne(grid);
+        System.out.println(ansPartOne);
     }
 
     public static void main(String[] args) throws IOException {
@@ -47,7 +85,7 @@ public class Main {
     private BufferedReader in;
 
     private void run() throws IOException {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple.txt")));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
         solve();
         in.close();
     }
