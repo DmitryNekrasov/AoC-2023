@@ -46,10 +46,37 @@ public class Main {
         }
     }
 
+    private void rotate(char[][] grid) {
+        int n = grid.length;
+        for (int k = 0, ek = n / 2; k < ek; k++) {
+            for (int i = k; i < n - 1 - k; i++) {
+                char buf = grid[k][i];
+                grid[k][i] = grid[n - 1 - i][k];
+                grid[n - 1 - i][k] = grid[n - 1 - k][n - 1 - i];
+                grid[n - 1 - k][n - 1 - i] = grid[i][n - 1 - k];
+                grid[i][n - 1 - k] = buf;
+            }
+        }
+    }
+
+    private void spinCycle(char[][] grid) {
+        for (int i = 0; i < 4; i++) {
+            move(grid);
+            rotate(grid);
+        }
+    }
+
     private int solvePartOne(char[][] grid) {
         move(grid);
-        printGrid(grid);
         return getScore(grid);
+    }
+
+    private int solvePartTwo(char[][] grid) {
+        spinCycle(grid);
+        spinCycle(grid);
+        spinCycle(grid);
+        printGrid(grid);
+        return -1;
     }
 
     private char[][] asCharArray(List<String> gridList) {
@@ -80,6 +107,8 @@ public class Main {
         var grid = asCharArray(gridList);
         var ansPartOne = solvePartOne(grid);
         System.out.println(ansPartOne);
+        var ansPartTwo = solvePartTwo(grid);
+        System.out.println(ansPartTwo);
     }
 
     public static void main(String[] args) throws IOException {
@@ -89,7 +118,7 @@ public class Main {
     private BufferedReader in;
 
     private void run() throws IOException {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
+        in = new BufferedReader(new InputStreamReader(new FileInputStream("input_simple.txt")));
         solve();
         in.close();
     }
