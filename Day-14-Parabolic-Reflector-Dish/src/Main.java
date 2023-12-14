@@ -21,7 +21,7 @@ public class Main {
         return result;
     }
 
-    private int solvePartOne(char[][] grid) {
+    private void move(char[][] grid) {
         int n = grid.length, m = grid[0].length;
         for (int j = 0; j < m; j++) {
             int p0 = 0;
@@ -44,6 +44,10 @@ public class Main {
                 }
             }
         }
+    }
+
+    private int solvePartOne(char[][] grid) {
+        move(grid);
         return getScore(grid);
     }
 
