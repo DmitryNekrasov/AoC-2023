@@ -71,7 +71,7 @@ public class Main {
         return getScore(grid);
     }
 
-    private static final long BASE = 31;
+    private static final long BASE = 269;
 
     private long hash(char[][] grid) {
         long h = 0;
