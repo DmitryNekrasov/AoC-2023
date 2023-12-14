@@ -7,11 +7,11 @@ import java.util.List;
 
 public class Main {
     private int getScore(char[][] grid) {
-        int n = grid.length, m = grid[0].length;
+        int n = grid.length;
         int result = 0;
         for (int i = 0; i < n; i++) {
             int stoneCount = 0;
-            for (int j = 0; j < m; j++) {
+            for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 'O') {
                     stoneCount++;
                 }
@@ -22,8 +22,8 @@ public class Main {
     }
 
     private void move(char[][] grid) {
-        int n = grid.length, m = grid[0].length;
-        for (int j = 0; j < m; j++) {
+        int n = grid.length;
+        for (int j = 0; j < n; j++) {
             int p0 = 0;
             while (p0 < n && grid[p0][j] != '.') {
                 p0++;
@@ -52,18 +52,18 @@ public class Main {
     }
 
     private char[][] asCharArray(List<String> gridList) {
-        int n = gridList.size(), m = gridList.getFirst().length();
-        char[][] grid = new char[n][m];
+        int n = gridList.size();
+        char[][] grid = new char[n][n];
         for (int i = 0; i < n; i++) {
-            System.arraycopy(gridList.get(i).toCharArray(), 0, grid[i], 0, m);
+            System.arraycopy(gridList.get(i).toCharArray(), 0, grid[i], 0, n);
         }
         return grid;
     }
 
     private void printGrid(char[][] grid) {
-        int m = grid[0].length;
+        int n = grid.length;
         for (char[] chars : grid) {
-            for (int j = 0; j < m; j++) {
+            for (int j = 0; j < n; j++) {
                 System.out.print(chars[j]);
             }
             System.out.println();
