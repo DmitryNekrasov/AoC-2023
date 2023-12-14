@@ -84,11 +84,15 @@ public class Main {
     }
 
     private int solvePartTwo(char[][] grid) {
-        spinCycle(grid);
-        spinCycle(grid);
-        spinCycle(grid);
-        printGrid(grid);
-        System.out.println(hash(grid));
+        List<Long> hashes = new ArrayList<>();
+        int index = 0;
+        do {
+            spinCycle(grid);
+            hashes.add(hash(grid));
+            spinCycle(grid);
+            hashes.add(hash(grid));
+        } while (!hashes.getLast().equals(hashes.get(index++)));
+        System.out.println("index = " + index);
         return -1;
     }
 
