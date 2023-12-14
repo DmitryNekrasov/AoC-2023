@@ -2,8 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     private int getScore(char[][] grid) {
@@ -83,17 +82,45 @@ public class Main {
         return h;
     }
 
+    private Map<Long, Integer> countHashes(List<Long> hashes) {
+        Map<Long, Integer> result = new HashMap<>();
+        for (var hash : hashes) {
+            result.put(hash, result.getOrDefault(hash, 0) + 1);
+        }
+        return result;
+    }
+
     private int solvePartTwo(char[][] grid) {
         List<Long> hashes = new ArrayList<>();
-        int index = 0;
-        do {
+        Map<Long, Integer> mapping = new HashMap<>();
+        int index = 0, initialIndex = -1;
+        while (true) {
             spinCycle(grid);
-            hashes.add(hash(grid));
+            var hash1 = hash(grid);
+            hashes.add(hash1);
+            mapping.put(hash1, getScore(grid));
             spinCycle(grid);
-            hashes.add(hash(grid));
-        } while (!hashes.getLast().equals(hashes.get(index++)));
-        System.out.println("index = " + index);
-        return -1;
+            var hash2 = hash(grid);
+            hashes.add(hash2);
+            mapping.put(hash2, getScore(grid));
+            if (hashes.getLast().equals(hashes.get(index)) && initialIndex != -1) {
+                break;
+            }
+            if (hashes.getLast().equals(hashes.get(index))) {
+                initialIndex = index;
+            }
+            index++;
+        }
+        int loopLen = index - initialIndex;
+        var ch = countHashes(hashes);
+        int loopStart = -1;
+        for (int i = 0; i < hashes.size(); i++) {
+            if (ch.get(hashes.get(i)) > 1) {
+                loopStart = i;
+                break;
+            }
+        }
+        return mapping.get(hashes.get(loopStart + (1_000_000_000 - loopStart - 1) % loopLen));
     }
 
     private char[][] asCharArray(List<String> gridList) {
