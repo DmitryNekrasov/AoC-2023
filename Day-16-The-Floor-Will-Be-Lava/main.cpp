@@ -26,11 +26,11 @@ int energized_number(const vector<vector<int>>& visited) {
     return result;
 }
 
-int solve_port_one(const vector<string>& field) {
+int solve_part_one(const vector<string>& field, int start_i = 0, int start_j = 0, int start_direction = RIGHT) {
     size_t n = field.size(), m = field.front().length();
     vector<vector<int>> visited(n, vector<int>(m, 0));
     queue<tuple<int, int, int>> q;
-    q.emplace(0, 0, RIGHT);
+    q.emplace(start_i, start_j, start_direction);
     while (!q.empty()) {
         auto [i, j, direction] = q.front();
         q.pop();
@@ -89,6 +89,18 @@ int solve_port_one(const vector<string>& field) {
     return energized_number(visited);
 }
 
+int solve_part_two(const vector<string>& field) {
+    size_t n = field.size(), m = field.front().length();
+    int result = 0;
+    for (size_t i = 0; i < n; i++) {
+        result = max(result, max(solve_part_one(field, i, 0), solve_part_one(field, i, m - 1, LEFT)));
+    }
+    for (size_t j = 0; j < m; j++) {
+        result = max(result, max(solve_part_one(field, 0, j, DOWN), solve_part_one(field, n - 1, j, UP)));
+    }
+    return result;
+}
+
 int main(int argc, char** argv) {
     ifstream ifs(argv[1]);
     string line;
@@ -96,7 +108,7 @@ int main(int argc, char** argv) {
     while (getline(ifs, line)) {
         field.push_back(line);
     }
-    int ans_part_one = solve_port_one(field);
-    cout << ans_part_one << endl;
+    cout << solve_part_one(field) << endl;
+    cout << solve_part_two(field) << endl;
     return 0;
 }
