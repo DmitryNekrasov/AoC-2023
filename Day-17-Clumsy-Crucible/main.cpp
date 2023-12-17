@@ -14,7 +14,15 @@ static constexpr int UP = 3;
 static constexpr int DIRECTION_NUMBER = 4;
 
 int opposite(int direction) {
-    return (direction + 2) % 4;
+    return (direction + 2) % DIRECTION_NUMBER;
+}
+
+int first_adjacent(int direction) {
+    return (direction + 1) % DIRECTION_NUMBER;
+}
+
+int second_adjacent(int direction) {
+    return (direction + 3) % DIRECTION_NUMBER;
 }
 
 struct Vertex {
@@ -49,7 +57,7 @@ void print_grid(const vector<string>& grid) {
     }
 }
 
-int solve_part_one(const vector<string>& grid) {
+int solve(const vector<string>& grid, int line_min_limit = 0, int line_max_limit = 3) {
     const size_t n = grid.size(), m = grid.front().length();
     unordered_set<Vertex, VertexHash> visited;
     priority_queue<Vertex> q;
@@ -57,15 +65,15 @@ int solve_part_one(const vector<string>& grid) {
     visited.insert(start_v);
     q.push(start_v);
     int result = numeric_limits<int>::max();
-    auto try_move = [n, m, &grid, &visited, &q](const Vertex& v, int next_direction) {
+    auto try_move = [n, m, &grid, &visited, &q, line_min_limit, line_max_limit](const Vertex& v, int next_direction) {
         auto [i, j, direction, straight_line_len, weight] = v;
         int next_i = i + (next_direction == DOWN ? 1 : (next_direction == UP ? -1 : 0));
         int next_j = j + (next_direction == RIGHT ? 1 : (next_direction == LEFT ? -1 : 0));
-        if (direction != opposite(next_direction) &&
-            next_i >= 0 && next_i < n &&
-            next_j >= 0 && next_j < m
-        ) {
-            if (direction != next_direction || straight_line_len < 3) {
+        if (next_i >= 0 && next_i < n && next_j >= 0 && next_j < m) {
+            if (straight_line_len < line_max_limit && next_direction == direction ||
+                straight_line_len >= line_min_limit &&
+                    (next_direction == first_adjacent(direction) || next_direction == second_adjacent(direction))
+            ) {
                 Vertex candidate(next_i, next_j, next_direction,
                                  direction == next_direction ? straight_line_len + 1 : 1,
                                  weight + grid[next_i][next_j] - '0');
@@ -87,6 +95,10 @@ int solve_part_one(const vector<string>& grid) {
         }
     }
     return result;
+}
+
+int solve_part_one(const vector<string>& grid) {
+    return solve(grid, 0, 3);
 }
 
 int main(int argc, char** argv) {
