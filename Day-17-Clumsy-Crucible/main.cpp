@@ -13,10 +13,6 @@ static constexpr int LEFT = 2;
 static constexpr int UP = 3;
 static constexpr int DIRECTION_NUMBER = 4;
 
-int opposite(int direction) {
-    return (direction + 2) % DIRECTION_NUMBER;
-}
-
 int first_adjacent(int direction) {
     return (direction + 1) % DIRECTION_NUMBER;
 }
@@ -57,11 +53,11 @@ void print_grid(const vector<string>& grid) {
     }
 }
 
-int solve(const vector<string>& grid, int line_min_limit = 0, int line_max_limit = 3) {
+int solve(const vector<string>& grid, int start_direction, int line_min_limit, int line_max_limit) {
     const size_t n = grid.size(), m = grid.front().length();
     unordered_set<Vertex, VertexHash> visited;
     priority_queue<Vertex> q;
-    Vertex start_v(0, 0, RIGHT, 0, 0);
+    Vertex start_v(0, 0, start_direction, 0, 0);
     visited.insert(start_v);
     q.push(start_v);
     int result = numeric_limits<int>::max();
@@ -86,7 +82,7 @@ int solve(const vector<string>& grid, int line_min_limit = 0, int line_max_limit
     };
     while (!q.empty()) {
         auto v = q.top();
-        if (v.i == n - 1 && v.j == m - 1) {
+        if (v.i == n - 1 && v.j == m - 1 && v.straight_line_len >= line_min_limit) {
             result = min(result, v.weight);
         }
         q.pop();
@@ -97,8 +93,17 @@ int solve(const vector<string>& grid, int line_min_limit = 0, int line_max_limit
     return result;
 }
 
+int solve(const vector<string>& grid, int line_min_limit, int line_max_limit) {
+    return min(solve(grid, RIGHT, line_min_limit, line_max_limit),
+               solve(grid, DOWN, line_min_limit, line_max_limit));
+}
+
 int solve_part_one(const vector<string>& grid) {
     return solve(grid, 0, 3);
+}
+
+int solve_part_two(const vector<string>& grid) {
+    return solve(grid, 4, 10);
 }
 
 int main(int argc, char** argv) {
@@ -109,5 +114,6 @@ int main(int argc, char** argv) {
         grid.push_back(line);
     }
     cout << solve_part_one(grid) << endl;
+    cout << solve_part_two(grid) << endl;
     return 0;
 }
