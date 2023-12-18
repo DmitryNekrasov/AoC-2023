@@ -26,16 +26,45 @@ fun calcSizeAndStart(edges: List<Edge>): IntArray {
     return intArrayOf(maxI - minI + 1, maxJ - minJ + 1, -minI, -minJ)
 }
 
+fun getField(edges: List<Edge>, n: Int, m: Int, startI: Int, startJ: Int): Array<CharArray> {
+    val result = Array(n) { CharArray(m) { '.' } }
+    var i = startI
+    var j = startJ
+    for (edge in edges) {
+        when (edge.direction) {
+            'R' -> {
+                (0..edge.length).forEach { result[i][j + it] = '#' }
+                j += edge.length
+            }
+            'L' -> {
+                (0..edge.length).forEach { result[i][j - it] = '#' }
+                j -= edge.length
+            }
+            'D' -> {
+                (0..edge.length).forEach { result[i + it][j] = '#' }
+                i += edge.length
+            }
+            'U' -> {
+                (0..edge.length).forEach { result[i - it][j] = '#' }
+                i -= edge.length
+            }
+            else -> throw RuntimeException()
+        }
+    }
+    return result
+}
+
 fun solvePartOne(edges: List<Edge>): Int {
-    println(edges)
     val (n, m, startI, startJ) = calcSizeAndStart(edges)
-    println("n = $n, m = $m, startI = $startI, startJ = $startJ")
+    val field = getField(edges, n, m, startI, startJ)
+    field.joinToString("\n") { String(it) }
+        .also { println(it) }
 
     return -1
 }
 
 fun main() {
-    val edges = File("input_simple_1.txt").useLines { it.toList() }
+    val edges = File("input.txt").useLines { it.toList() }
         .map { it.split(" ").let { (d, l, c) -> Edge(d.first(), l.toInt(), c) } }
     println(solvePartOne(edges))
 }
