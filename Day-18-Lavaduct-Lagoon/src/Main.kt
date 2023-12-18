@@ -1,4 +1,6 @@
 import java.io.File
+import java.util.LinkedList
+import java.util.Queue
 import kotlin.math.*
 
 data class Edge(val direction: Char, val length: Int, val color: String)
@@ -23,11 +25,33 @@ fun calcSizeAndStart(edges: List<Edge>): IntArray {
         maxI = max(maxI, i)
         maxJ = max(maxJ, j)
     }
-    return intArrayOf(maxI - minI + 1, maxJ - minJ + 1, -minI, -minJ)
+    return intArrayOf(maxI - minI + 3, maxJ - minJ + 3, 1 - minI, 1 - minJ)
+}
+
+fun fill(field: Array<CharArray>) {
+    val n = field.size
+    val m = field.first().size
+    val queue: Queue<Pair<Int, Int>> = LinkedList()
+    queue.offer(0 to 0)
+    while (queue.isNotEmpty()) {
+        val (i, j) = queue.poll()
+        if (i < 0 || i >= n || j < 0 || j >= m || field[i][j] != ' ') continue
+        field[i][j] = '.'
+        for ((di, dj) in listOf(0 to 1, 0 to -1, 1 to 0, -1 to 0)) {
+            queue.offer(i + di to j + dj)
+        }
+    }
+    for (i in 0..<n) {
+        for (j in 0..<m) {
+            if (field[i][j] != '.') {
+                field[i][j] = '#'
+            }
+        }
+    }
 }
 
 fun getField(edges: List<Edge>, n: Int, m: Int, startI: Int, startJ: Int): Array<CharArray> {
-    val result = Array(n) { CharArray(m) { '.' } }
+    val result = Array(n) { CharArray(m) { ' ' } }
     var i = startI
     var j = startJ
     for (edge in edges) {
@@ -51,6 +75,7 @@ fun getField(edges: List<Edge>, n: Int, m: Int, startI: Int, startJ: Int): Array
             else -> throw RuntimeException()
         }
     }
+    fill(result)
     return result
 }
 
@@ -64,7 +89,7 @@ fun solvePartOne(edges: List<Edge>): Int {
 }
 
 fun main() {
-    val edges = File("input.txt").useLines { it.toList() }
+    val edges = File("input_simple_1.txt").useLines { it.toList() }
         .map { it.split(" ").let { (d, l, c) -> Edge(d.first(), l.toInt(), c) } }
     println(solvePartOne(edges))
 }
