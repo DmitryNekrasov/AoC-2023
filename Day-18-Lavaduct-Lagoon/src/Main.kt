@@ -50,6 +50,8 @@ fun fill(field: Array<CharArray>) {
     }
 }
 
+fun area(field: Array<CharArray>) = field.sumOf { it.count { it == '#' } }
+
 fun getField(edges: List<Edge>, n: Int, m: Int, startI: Int, startJ: Int): Array<CharArray> {
     val result = Array(n) { CharArray(m) { ' ' } }
     var i = startI
@@ -84,12 +86,11 @@ fun solvePartOne(edges: List<Edge>): Int {
     val field = getField(edges, n, m, startI, startJ)
     field.joinToString("\n") { String(it) }
         .also { println(it) }
-
-    return -1
+    return area(field)
 }
 
 fun main() {
-    val edges = File("input_simple_1.txt").useLines { it.toList() }
+    val edges = File("input.txt").useLines { it.toList() }
         .map { it.split(" ").let { (d, l, c) -> Edge(d.first(), l.toInt(), c) } }
     println(solvePartOne(edges))
 }
