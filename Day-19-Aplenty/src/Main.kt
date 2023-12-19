@@ -24,10 +24,10 @@ data class PartRange(val xRange: IntRange, val mRange: IntRange, val aRange: Int
 
     fun splitBy(x: Char, value: Int): Pair<PartRange, PartRange> {
         return when (x) {
-            'x' -> PartRange(xRange.first..<value, mRange, aRange, sRange) to PartRange(value..xRange.last, mRange, aRange, sRange)
-            'm' -> PartRange(xRange, mRange.first..<value, aRange, sRange) to PartRange(xRange, value..mRange.last, aRange, sRange)
-            'a' -> PartRange(xRange, mRange, aRange.first..<value, sRange) to PartRange(xRange, mRange, value..aRange.last, sRange)
-            's' -> PartRange(xRange, mRange, aRange, sRange.first..<value) to PartRange(xRange, mRange, aRange, value..sRange.last)
+            'x' -> copy(xRange = xRange.first..<value) to copy(xRange = value..xRange.last)
+            'm' -> copy(mRange = mRange.first..<value) to copy(mRange = value..mRange.last)
+            'a' -> copy(aRange = aRange.first..<value) to copy(aRange = value..aRange.last)
+            's' -> copy(sRange = sRange.first..<value) to copy(sRange = value..sRange.last)
             else -> throw RuntimeException()
         }
     }
