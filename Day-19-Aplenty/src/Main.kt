@@ -2,6 +2,31 @@ import java.io.File
 
 data class Part(val x: Int, val m: Int, val a: Int, val s: Int)
 
+abstract class Rule(val nextState: String) {
+    abstract fun isAccepted(part: Part): Boolean
+}
+
+class RuleWithCondition(private val category: Char, private val comparisonSign: Char, private val value: Int, nextState: String) : Rule(nextState) {
+    override fun isAccepted(part: Part): Boolean {
+        val x = when (category) {
+            'x' -> part.x
+            'm' -> part.m
+            'a' -> part.a
+            's' -> part.s
+            else -> throw RuntimeException()
+        }
+        return if (comparisonSign == '>') x > value else x < value
+    }
+
+    override fun toString() = "$category$comparisonSign$value:$nextState"
+}
+
+class AlwaysTrueRule(nextState: String): Rule(nextState) {
+    override fun isAccepted(part: Part) = true
+
+    override fun toString() = nextState
+}
+
 fun parsePartStrings(partStrings: List<String>): List<Part> {
     fun parsePartString(partString: String): Part {
         val (x, m, a, s) = partString.substring(1..<partString.lastIndex)
