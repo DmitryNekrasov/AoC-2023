@@ -15,19 +15,19 @@ data class Part(val x: Int, val m: Int, val a: Int, val s: Int) {
     }
 }
 
-data class PartRange(val xRange: IntRange, val mRange: IntRange, val aRange: IntRange, val sRange: IntRange) {
+data class PartRange(val xr: IntRange, val mr: IntRange, val ar: IntRange, val sr: IntRange) {
     val number: Long
-        get() = (xRange.last - xRange.first + 1).toLong() *
-                (mRange.last - mRange.first + 1).toLong() *
-                (aRange.last - aRange.first + 1).toLong() *
-                (sRange.last - sRange.first + 1).toLong()
+        get() = (xr.last - xr.first + 1).toLong() *
+                (mr.last - mr.first + 1).toLong() *
+                (ar.last - ar.first + 1).toLong() *
+                (sr.last - sr.first + 1).toLong()
 
     fun splitBy(x: Char, value: Int): Pair<PartRange, PartRange> {
         return when (x) {
-            'x' -> copy(xRange = xRange.first..<value) to copy(xRange = value..xRange.last)
-            'm' -> copy(mRange = mRange.first..<value) to copy(mRange = value..mRange.last)
-            'a' -> copy(aRange = aRange.first..<value) to copy(aRange = value..aRange.last)
-            's' -> copy(sRange = sRange.first..<value) to copy(sRange = value..sRange.last)
+            'x' -> copy(xr = xr.first..<value) to copy(xr = value..xr.last)
+            'm' -> copy(mr = mr.first..<value) to copy(mr = value..mr.last)
+            'a' -> copy(ar = ar.first..<value) to copy(ar = value..ar.last)
+            's' -> copy(sr = sr.first..<value) to copy(sr = value..sr.last)
             else -> throw RuntimeException()
         }
     }
@@ -83,10 +83,10 @@ class RuleWithCondition(private val category: Char, private val comparisonSign: 
 
     override fun isAccepted(partRange: PartRange): Boolean {
         return when (category) {
-            'x' -> value in partRange.xRange
-            'm' -> value in partRange.mRange
-            'a' -> value in partRange.aRange
-            's' -> value in partRange.sRange
+            'x' -> value in partRange.xr
+            'm' -> value in partRange.mr
+            'a' -> value in partRange.ar
+            's' -> value in partRange.sr
             else -> throw RuntimeException()
         }
     }
