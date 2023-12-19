@@ -13,6 +13,8 @@ data class Part(val x: Int, val m: Int, val a: Int, val s: Int) {
     }
 }
 
+data class PartRange(val xRange: IntRange, val mRange: IntRange, val aRange: IntRange, val sRange: IntRange)
+
 data class Workflow(val rules: List<Rule>) {
     fun lastState(part: Part): String {
         for (rule in rules) {
@@ -88,8 +90,11 @@ fun parsePartStrings(partStrings: List<String>): List<Part> {
     return partStrings.map { parsePartString(it) }
 }
 
-fun solve(workflows: Map<String, Workflow>, parts: List<Part>): Int {
+fun solvePartOne(workflows: Map<String, Workflow>, parts: List<Part>): Int {
     return parts.filter { it.isAcceptedByWorkflows(workflows) }.sumOf { it.rating }
+}
+fun solvePartTwo(workflows: Map<String, Workflow>): Long {
+    return -1L
 }
 
 fun main() {
@@ -99,5 +104,5 @@ fun main() {
     val partStrings = input.subList(delimiter + 1, input.size)
     val workflows = parseWorkflowStrings(workflowStrings)
     val parts = parsePartStrings(partStrings)
-    println(solve(workflows, parts))
+    println(solvePartOne(workflows, parts))
 }
