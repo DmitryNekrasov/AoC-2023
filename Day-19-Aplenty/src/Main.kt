@@ -2,11 +2,18 @@ import java.io.File
 
 data class Part(val x: Int, val m: Int, val a: Int, val s: Int)
 
+data class Workflow(val rules: List<Rule>)
+
 abstract class Rule(val nextState: String) {
     abstract fun isAccepted(part: Part): Boolean
 }
 
-class RuleWithCondition(private val category: Char, private val comparisonSign: Char, private val value: Int, nextState: String) : Rule(nextState) {
+class RuleWithCondition(
+    private val category: Char,
+    private val comparisonSign: Char,
+    private val value: Int,
+    nextState: String
+) : Rule(nextState) {
     override fun isAccepted(part: Part): Boolean {
         val x = when (category) {
             'x' -> part.x
@@ -21,10 +28,28 @@ class RuleWithCondition(private val category: Char, private val comparisonSign: 
     override fun toString() = "$category$comparisonSign$value:$nextState"
 }
 
-class AlwaysTrueRule(nextState: String): Rule(nextState) {
+class AlwaysTrueRule(nextState: String) : Rule(nextState) {
     override fun isAccepted(part: Part) = true
 
     override fun toString() = nextState
+}
+
+fun parseWorkflowStrings(workflowStrings: List<String>): Map<String, Workflow> {
+    fun parseWorkflowString(workflowString: String): Pair<String, Workflow> {
+        fun parseRules(rules: List<String>): List<Rule> {
+            fun parseRule(ruleString: String): Rule {
+                if (':' in ruleString) {
+                    val (condition, nextWorkflow) = ruleString.split(":")
+                    return RuleWithCondition(condition[0], condition[1], condition.substring(2, condition.length).toInt(), nextWorkflow)
+                }
+                return AlwaysTrueRule(ruleString)
+            }
+            return rules.map { parseRule(it) }
+        }
+        val (name, ruleStrings) = workflowString.substring(0..<workflowString.lastIndex).split("{")
+        return name to Workflow(parseRules(ruleStrings.split(",")))
+    }
+    return workflowStrings.map { parseWorkflowString(it) }.associateBy({ it.first }, { it.second })
 }
 
 fun parsePartStrings(partStrings: List<String>): List<Part> {
@@ -44,11 +69,8 @@ fun main() {
     val workflowStrings = input.subList(0, delimiter)
     val partStrings = input.subList(delimiter + 1, input.lastIndex)
 
-    workflowStrings.joinToString("\n")
-        .also { println(it) }
-    println("--")
-
+    val workflows = parseWorkflowStrings(workflowStrings)
+    println(workflows.toList().joinToString("\n"))
     val parts = parsePartStrings(partStrings)
-    parts.joinToString("\n") { it.toString() }
-        .also { println(it) }
+    println(parts.joinToString("\n") { it.toString() })
 }
