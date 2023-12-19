@@ -130,8 +130,7 @@ fun parseWorkflowStrings(workflowStrings: List<String>): Map<String, Workflow> {
 
 fun parsePartStrings(partStrings: List<String>): List<Part> {
     fun parsePartString(partString: String): Part {
-        val (x, m, a, s) = partString.substring(1..<partString.lastIndex).split(",").map { it.split("=").last() }
-            .map { it.toInt() }
+        val (x, m, a, s) = partString.substring(1..<partString.lastIndex).split(",").map { it.split("=").last() }.map { it.toInt() }
         return Part(x, m, a, s)
     }
     return partStrings.map { parsePartString(it) }
