@@ -28,7 +28,6 @@ class FlipFlop(name: String) : Module(name) {
                 lowCounter++
                 if (isOn) Signal.High else Signal.Low
             }
-
             else -> throw RuntimeException()
         }
     }
@@ -72,8 +71,6 @@ class Terminal(name: String) : Module(name) {
         if (signal == Signal.Low) lowCounter++ else highCounter++
         return Signal.None
     }
-
-    override fun reset() {}
 }
 
 fun getNameAndType(vertex: String): Pair<String, ModuleType> {
