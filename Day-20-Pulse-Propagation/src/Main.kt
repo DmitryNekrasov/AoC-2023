@@ -77,14 +77,29 @@ fun numberOfInputsPerConjunctionModule(conjunctionModuleName: String, graph: Map
     return graph.values.count { conjunctionModuleName in it }
 }
 
+fun generateNameToModule(
+    nameToType: Map<String, ModuleType>,
+    conjunctionInputs: Map<String, Int>
+): Map<String, Module> {
+    return nameToType.map { (name, type) ->
+        name to when (type) {
+            ModuleType.FlipFlop -> FlipFlop(name)
+            ModuleType.Conjunction -> Conjunction(name, conjunctionInputs[name]!!)
+            ModuleType.Broadcaster -> Broadcaster(name)
+            ModuleType.Terminal -> Terminal(name)
+        }
+    }.associateBy({ it.first }, { it.second })
+}
+
 fun main() {
-    val vertexType = HashMap<String, ModuleType>()
-    val graph = File("input.txt").useLines { it.toList() }.map { parseLine(it, vertexType) }
+    val nameToType = HashMap<String, ModuleType>()
+    val graph = File("input.txt").useLines { it.toList() }.map { parseLine(it, nameToType) }
         .associateBy({ it.first }, { it.second })
-    val conjunctionInputs = vertexType.filter { it.value == ModuleType.Conjunction }
+    val conjunctionInputs = nameToType.filter { it.value == ModuleType.Conjunction }
         .map { it.key to numberOfInputsPerConjunctionModule(it.key, graph) }.associateBy({ it.first }, { it.second })
+    val nameToModule = generateNameToModule(nameToType, conjunctionInputs)
 
     println(graph.toList().joinToString("\n") { it.toString() })
-    println(vertexType.toList().joinToString("\n") { it.toString() })
+    println(nameToType.toList().joinToString("\n") { it.toString() })
     println(conjunctionInputs)
 }
