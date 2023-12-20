@@ -7,13 +7,13 @@ enum class ModuleType { FlipFlop, Conjunction, Broadcaster, Terminal }
 enum class Signal { Low, High, None }
 
 abstract class Module(val name: String) {
+    var lowCounter = 0L
+    var highCounter = 0L
     abstract fun process(from: Module, signal: Signal): Signal
 
-    abstract fun reset()
-
-    companion object {
-        var lowCounter = 0L
-        var highCounter = 0L
+    open fun reset() {
+        lowCounter = 0
+        highCounter = 0
     }
 }
 
@@ -34,6 +34,7 @@ class FlipFlop(name: String) : Module(name) {
     }
 
     override fun reset() {
+        super.reset()
         isOn = false
     }
 }
@@ -54,6 +55,7 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
     }
 
     override fun reset() {
+        super.reset()
         highInputs.clear()
     }
 }
@@ -62,8 +64,6 @@ class Broadcaster(name: String) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         throw RuntimeException()
     }
-
-    override fun reset() {}
 }
 
 class Terminal(name: String) : Module(name) {
@@ -116,7 +116,6 @@ fun generateNameToModule(
 }
 
 fun pushButton(graph: Map<String, List<String>>, nameToModule: Map<String, Module>) {
-    Module.lowCounter++
     val queue: Queue<Pair<Module, Signal>> = LinkedList()
     queue.offer(nameToModule["broadcaster"]!! to Signal.Low)
     while (queue.isNotEmpty()) {
@@ -133,17 +132,21 @@ fun pushButton(graph: Map<String, List<String>>, nameToModule: Map<String, Modul
 
 fun solvePartOne(times: Int, graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
     repeat(times) { pushButton(graph, nameToModule) }
-    return Module.lowCounter * Module.highCounter
+    return (nameToModule.values.sumOf { it.lowCounter } + times) * nameToModule.values.sumOf { it.highCounter }
+}
+
+fun inputToLx(graph: Map<String, List<String>>): List<String> {
+    return graph.filter { (_, toList) -> "lx" in toList }.map { it.key }
 }
 
 fun reset(nameToModule: Map<String, Module>) {
-    Module.lowCounter = 0
-    Module.highCounter = 0
     nameToModule.values.forEach { module -> module.reset() }
 }
 
 fun solvePartTwo(graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
     reset(nameToModule)
+    val inputToLx = inputToLx(graph)
+    println(inputToLx)
 
     return -1L
 }
@@ -157,5 +160,5 @@ fun main() {
     val nameToModule = generateNameToModule(nameToType, conjunctionInputs)
 
     println(solvePartOne(1000, graph, nameToModule))
-    println(solvePartTwo(graph, nameToModule))
+//    println(solvePartTwo(graph, nameToModule))
 }
