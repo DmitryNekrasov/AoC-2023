@@ -23,9 +23,16 @@ fun parseLine(line: String, vertexType: HashMap<String, ModuleType>): Pair<Strin
     return fromName to toList
 }
 
+fun numberOfInputsPerConjunctionModule(conjunctionModuleName: String, graph: Map<String, List<String>>): Int {
+    return graph.values.count { conjunctionModuleName in it }
+}
+
 fun main() {
     val vertexType = HashMap<String, ModuleType>()
-    val graph = File("input_simple_2.txt").useLines { it.toList() }.map { parseLine(it, vertexType) }.associateBy({ it.first }, { it.second })
+    val graph = File("input.txt").useLines { it.toList() }.map { parseLine(it, vertexType) }.associateBy({ it.first }, { it.second })
+    val conjunctionInputs = vertexType.filter { it.value == ModuleType.Conjunction }.map { it.key to numberOfInputsPerConjunctionModule(it.key, graph) }.associateBy({ it.first }, { it.second })
+
     println(graph.toList().joinToString("\n") { it.toString() })
     println(vertexType.toList().joinToString("\n") { it.toString() })
+    println(conjunctionInputs)
 }
