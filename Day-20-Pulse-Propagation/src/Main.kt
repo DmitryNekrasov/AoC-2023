@@ -2,6 +2,56 @@ import java.io.File
 
 enum class ModuleType { FlipFlop, Conjunction, Broadcaster, Terminal }
 
+enum class Signal { Low, High, None }
+
+abstract class Module(val name: String) {
+    abstract fun process(from: Module, signal: Signal): Signal
+}
+
+class FlipFlop(name: String) : Module(name) {
+    private var isOn = false
+
+    override fun process(from: Module, signal: Signal): Signal {
+        return when (signal) {
+            Signal.High -> Signal.None
+            Signal.Low -> {
+                isOn = !isOn
+                if (isOn) Signal.High else Signal.Low
+            }
+
+            else -> throw RuntimeException()
+        }
+    }
+}
+
+class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
+    private val highInputs = HashSet<String>()
+
+    override fun process(from: Module, signal: Signal): Signal {
+        if (signal == Signal.None) throw RuntimeException()
+        if (signal == Signal.High) {
+            highInputs.add(from.name)
+        } else {
+            highInputs.remove(from.name)
+        }
+        return if (highInputs.size == inputNumber) Signal.Low else Signal.High
+    }
+}
+
+class Broadcaster(name: String) : Module(name) {
+    override fun process(from: Module, signal: Signal): Signal {
+        if (signal == Signal.None) throw RuntimeException()
+        return signal
+    }
+}
+
+class Terminal(name: String) : Module(name) {
+    override fun process(from: Module, signal: Signal): Signal {
+        if (signal == Signal.None) throw RuntimeException()
+        return Signal.None
+    }
+}
+
 fun getNameAndType(vertex: String): Pair<String, ModuleType> {
     return when (vertex[0]) {
         '%' -> vertex.drop(1) to ModuleType.FlipFlop
