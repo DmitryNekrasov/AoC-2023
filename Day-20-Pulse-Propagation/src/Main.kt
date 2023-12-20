@@ -1,4 +1,6 @@
 import java.io.File
+import java.util.LinkedList
+import java.util.Queue
 
 enum class ModuleType { FlipFlop, Conjunction, Broadcaster, Terminal }
 
@@ -6,6 +8,11 @@ enum class Signal { Low, High, None }
 
 abstract class Module(val name: String) {
     abstract fun process(from: Module, signal: Signal): Signal
+
+    companion object {
+        var lowCounter = 0L
+        var highCounter = 0L
+    }
 }
 
 class FlipFlop(name: String) : Module(name) {
@@ -13,9 +20,10 @@ class FlipFlop(name: String) : Module(name) {
 
     override fun process(from: Module, signal: Signal): Signal {
         return when (signal) {
-            Signal.High -> Signal.None
+            Signal.High -> Signal.None.also { highCounter++ }
             Signal.Low -> {
                 isOn = !isOn
+                lowCounter++
                 if (isOn) Signal.High else Signal.Low
             }
 
@@ -30,8 +38,10 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         if (signal == Signal.None) throw RuntimeException()
         if (signal == Signal.High) {
+            highCounter++
             highInputs.add(from.name)
         } else {
+            lowCounter++
             highInputs.remove(from.name)
         }
         return if (highInputs.size == inputNumber) Signal.Low else Signal.High
@@ -40,14 +50,14 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
 
 class Broadcaster(name: String) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
-        if (signal == Signal.None) throw RuntimeException()
-        return signal
+        throw RuntimeException()
     }
 }
 
 class Terminal(name: String) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         if (signal == Signal.None) throw RuntimeException()
+        if (signal == Signal.Low) lowCounter++ else highCounter++
         return Signal.None
     }
 }
@@ -91,6 +101,27 @@ fun generateNameToModule(
     }.associateBy({ it.first }, { it.second })
 }
 
+fun pushButton(graph: Map<String, List<String>>, nameToModule: Map<String, Module>) {
+    Module.lowCounter++
+    val queue: Queue<Pair<Module, Signal>> = LinkedList()
+    queue.offer(nameToModule["broadcaster"]!! to Signal.Low)
+    while (queue.isNotEmpty()) {
+        val (from, signal) = queue.poll()
+        for (toName in graph[from.name]!!) {
+            val to = nameToModule[toName]!!
+            val nextSignal = to.process(from, signal)
+            if (nextSignal != Signal.None) {
+                queue.offer(to to nextSignal)
+            }
+        }
+    }
+}
+
+fun solve(times: Int, graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
+    repeat(times) { pushButton(graph, nameToModule) }
+    return Module.lowCounter * Module.highCounter
+}
+
 fun main() {
     val nameToType = HashMap<String, ModuleType>()
     val graph = File("input.txt").useLines { it.toList() }.map { parseLine(it, nameToType) }
@@ -99,7 +130,5 @@ fun main() {
         .map { it.key to numberOfInputsPerConjunctionModule(it.key, graph) }.associateBy({ it.first }, { it.second })
     val nameToModule = generateNameToModule(nameToType, conjunctionInputs)
 
-    println(graph.toList().joinToString("\n") { it.toString() })
-    println(nameToType.toList().joinToString("\n") { it.toString() })
-    println(conjunctionInputs)
+    println(solve(1000, graph, nameToModule))
 }
