@@ -9,6 +9,8 @@ enum class Signal { Low, High, None }
 abstract class Module(val name: String) {
     abstract fun process(from: Module, signal: Signal): Signal
 
+    abstract fun reset()
+
     companion object {
         var lowCounter = 0L
         var highCounter = 0L
@@ -30,6 +32,10 @@ class FlipFlop(name: String) : Module(name) {
             else -> throw RuntimeException()
         }
     }
+
+    override fun reset() {
+        isOn = false
+    }
 }
 
 class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
@@ -46,12 +52,18 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
         }
         return if (highInputs.size == inputNumber) Signal.Low else Signal.High
     }
+
+    override fun reset() {
+        highInputs.clear()
+    }
 }
 
 class Broadcaster(name: String) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         throw RuntimeException()
     }
+
+    override fun reset() {}
 }
 
 class Terminal(name: String) : Module(name) {
@@ -60,6 +72,8 @@ class Terminal(name: String) : Module(name) {
         if (signal == Signal.Low) lowCounter++ else highCounter++
         return Signal.None
     }
+
+    override fun reset() {}
 }
 
 fun getNameAndType(vertex: String): Pair<String, ModuleType> {
@@ -117,9 +131,21 @@ fun pushButton(graph: Map<String, List<String>>, nameToModule: Map<String, Modul
     }
 }
 
-fun solve(times: Int, graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
+fun solvePartOne(times: Int, graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
     repeat(times) { pushButton(graph, nameToModule) }
     return Module.lowCounter * Module.highCounter
+}
+
+fun reset(nameToModule: Map<String, Module>) {
+    Module.lowCounter = 0
+    Module.highCounter = 0
+    nameToModule.values.forEach { module -> module.reset() }
+}
+
+fun solvePartTwo(graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
+    reset(nameToModule)
+
+    return -1L
 }
 
 fun main() {
@@ -130,5 +156,6 @@ fun main() {
         .map { it.key to numberOfInputsPerConjunctionModule(it.key, graph) }.associateBy({ it.first }, { it.second })
     val nameToModule = generateNameToModule(nameToType, conjunctionInputs)
 
-    println(solve(1000, graph, nameToModule))
+    println(solvePartOne(1000, graph, nameToModule))
+    println(solvePartTwo(graph, nameToModule))
 }
