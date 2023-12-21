@@ -2,11 +2,10 @@ import java.io.File
 import java.util.LinkedList
 import java.util.Queue
 
-fun getStart(field: List<CharArray>) =
-    field.withIndex().filter { (_, line) -> 'S' in line }.map { (i, line) -> i to line.indexOf('S') }.first()
-
 fun solvePartOne(field: List<CharArray>): Int {
     val limit = 64
+    fun getStart(field: List<CharArray>) =
+        field.withIndex().filter { (_, line) -> 'S' in line }.map { (i, line) -> i to line.indexOf('S') }.first()
     fun opposite(c: Char) = if (c == 'O') 'E' else 'O'
     val (startRow, startCol) = getStart(field)
     val n = field.size
@@ -24,8 +23,9 @@ fun solvePartOne(field: List<CharArray>): Int {
             }
         }
     }
-    return 1 + field.sumOf { it.count { it == 'E' } }
+    return 1 + field.sumOf { it.count { c -> c == 'E' } }
 }
+
 
 fun main() {
     val field = File("input.txt").useLines { it.toList() }.map { it.toCharArray() }
