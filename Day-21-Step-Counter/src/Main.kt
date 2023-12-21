@@ -42,23 +42,12 @@ fun full(fieldIn: List<CharArray>): Pair<Int, Int> { // O count, E count
     return field.sumOf { it.count { c -> c == 'O' } } to field.sumOf { it.count { c -> c == 'E' } }
 }
 
-fun oNSEW(fieldIn: List<CharArray>): List<Int> {
+fun eNSEW(fieldIn: List<CharArray>): List<Int> {
     val n = fieldIn.size
     val result = mutableListOf<Int>()
     for ((i, j) in listOf(0 to n / 2, n - 1 to n / 2, n / 2 to 0, n / 2 to n - 1)) {
         val field = fieldIn.map { it.copyOf() }
-        bfs(field, i, j, n - 1, 'E')
-        result.add(field.sumOf { it.count { c -> c == 'O' } })
-    }
-    return result
-}
-
-fun eNWNESESW(fieldIn: List<CharArray>): List<Int> {
-    val n = fieldIn.size
-    val result = mutableListOf<Int>()
-    for ((i, j) in listOf(0 to 0, 0 to n - 1, n - 1 to n - 1, n - 1 to 0)) {
-        val field = fieldIn.map { it.copyOf() }
-        bfs(field, i, j, n / 2, 'E')
+        bfs(field, i, j, n - 1, 'O')
         result.add(field.sumOf { it.count { c -> c == 'O' } })
     }
     return result
@@ -69,7 +58,18 @@ fun oNWNESESW(fieldIn: List<CharArray>): List<Int> {
     val result = mutableListOf<Int>()
     for ((i, j) in listOf(0 to 0, 0 to n - 1, n - 1 to n - 1, n - 1 to 0)) {
         val field = fieldIn.map { it.copyOf() }
-        bfs(field, i, j, n - 1 + n / 2, 'O')
+        bfs(field, i, j, n / 2, 'O')
+        result.add(field.sumOf { it.count { c -> c == 'O' } })
+    }
+    return result
+}
+
+fun eNWNESESW(fieldIn: List<CharArray>): List<Int> {
+    val n = fieldIn.size
+    val result = mutableListOf<Int>()
+    for ((i, j) in listOf(0 to 0, 0 to n - 1, n - 1 to n - 1, n - 1 to 0)) {
+        val field = fieldIn.map { it.copyOf() }
+        bfs(field, i, j, n - 1 + n / 2, 'E')
         result.add(field.sumOf { it.count { c -> c == 'O' } })
     }
     return result
@@ -88,27 +88,12 @@ fun fullCount(n: Int): Pair<Long, Long> { // O count, E count
 fun solvePartTwo(fieldIn: List<CharArray>): Long {
     val size = fieldIn.size
     val n = (PART_TWO_STEP_NUMBER - size / 2) / size + 1
-    println("n = $n")
-
     val (oFull, eFull) = full(fieldIn)
-    println("oFull = $oFull, eFull = $eFull")
-
     val (oNumber, eNumber) = fullCount(n)
-    println("oNumber = $oNumber, eNumber = $eNumber")
-
-    val oNSEW = oNSEW(fieldIn)
-    println("oNSEW = $oNSEW")
-
+    val eNSEW = eNSEW(fieldIn)
     val eNWNESESW = eNWNESESW(fieldIn)
-    println("eNWNESESW = $eNWNESESW")
-
     val oNWNESESW = oNWNESESW(fieldIn)
-    println("oNWNESESW = $oNWNESESW")
-
-    val ans = oNSEW.sum() + (n - 1).toLong() * eNWNESESW.sum() + (n - 2).toLong() * oNWNESESW.sum() + oNumber * oFull + eNumber * eFull
-    println("ans = $ans")
-
-    return -1L
+    return eNSEW.sum() + (n - 1).toLong() * oNWNESESW.sum() + (n - 2).toLong() * eNWNESESW.sum() + oNumber * oFull + eNumber * eFull
 }
 
 fun main() {
