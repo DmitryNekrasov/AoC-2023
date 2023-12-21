@@ -15,6 +15,14 @@ abstract class Module(val name: String) {
         lowCounter = 0L
         highCounter = 0L
     }
+
+    open fun incHigh() {
+        highCounter++
+    }
+
+    open fun incLow() {
+        lowCounter++
+    }
 }
 
 class FlipFlop(name: String) : Module(name) {
@@ -22,10 +30,10 @@ class FlipFlop(name: String) : Module(name) {
 
     override fun process(from: Module, signal: Signal): Signal {
         return when (signal) {
-            Signal.High -> Signal.None.also { from.highCounter++ }
+            Signal.High -> Signal.None.also { from.incHigh() }
             Signal.Low -> {
                 isOn = !isOn
-                from.lowCounter++
+                from.incLow()
                 if (isOn) Signal.High else Signal.Low
             }
             else -> throw RuntimeException()
@@ -44,10 +52,10 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         if (signal == Signal.None) throw RuntimeException()
         if (signal == Signal.High) {
-            from.highCounter++
+            from.incHigh()
             highInputs.add(from.name)
         } else {
-            from.lowCounter++
+            from.incLow()
             highInputs.remove(from.name)
         }
         return if (highInputs.size == inputNumber) Signal.Low else Signal.High
@@ -56,6 +64,14 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
     override fun reset() {
         super.reset()
         highInputs.clear()
+    }
+
+    override fun incHigh() {
+        super.incHigh()
+    }
+
+    override fun incLow() {
+        super.incLow()
     }
 }
 
@@ -69,7 +85,7 @@ class Broadcaster(name: String) : Module(name) {
 class Terminal(name: String) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         if (signal == Signal.None) throw RuntimeException()
-        if (signal == Signal.Low) from.lowCounter++ else from.highCounter++
+        if (signal == Signal.Low) from.incLow() else from.incHigh()
         return Signal.None
     }
 }
@@ -116,7 +132,7 @@ fun generateNameToModule(
 fun pushButton(graph: Map<String, List<String>>, nameToModule: Map<String, Module>) {
     val queue: Queue<Pair<Module, Signal>> = LinkedList()
     val broadcaster = nameToModule["broadcaster"]!!
-    broadcaster.lowCounter += 1
+    broadcaster.incLow()
     queue.offer(broadcaster to Signal.Low)
     while (queue.isNotEmpty()) {
         val (from, signal) = queue.poll()
