@@ -13,7 +13,7 @@ fun solve(field: List<CharArray>): Int {
     val n = field.size
     val m = field.first().size
     val queue: Queue<Triple<Int, Int, Int>> = LinkedList()
-    queue.offer(Triple(startRow, startRow, 0))
+    queue.offer(Triple(startRow, startCol, 0))
     while (queue.isNotEmpty()) {
         val (i, j, stepCount) = queue.poll()
         for ((di, dj) in listOf(0 to 1, 0 to -1, 1 to 0, -1 to 0)) {
