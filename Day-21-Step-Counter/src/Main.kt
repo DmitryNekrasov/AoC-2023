@@ -4,11 +4,15 @@ import java.util.Queue
 
 fun solvePartOne(fieldIn: List<CharArray>): Int {
     val field = fieldIn.map { it.copyOf() }
-    val limit = 64
     fun getStart(field: List<CharArray>) =
         field.withIndex().filter { (_, line) -> 'S' in line }.map { (i, line) -> i to line.indexOf('S') }.first()
-    fun opposite(c: Char) = if (c == 'O') 'E' else 'O'
     val (startRow, startCol) = getStart(field)
+    bfs(field, startRow, startCol, 64)
+    return 1 + field.sumOf { it.count { c -> c == 'E' } }
+}
+
+fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int) {
+    fun opposite(c: Char) = if (c == 'O') 'E' else 'O'
     val n = field.size
     val m = field.first().size
     val queue: Queue<Triple<Int, Int, Int>> = LinkedList()
@@ -24,14 +28,13 @@ fun solvePartOne(fieldIn: List<CharArray>): Int {
             }
         }
     }
-    return 1 + field.sumOf { it.count { c -> c == 'E' } }
 }
 
 fun solvePartTwo(fieldIn: List<CharArray>): Long {
     val field = fieldIn.map { it.copyOf() }
     println(field.joinToString("\n") { String(it) })
 
-    return -1
+    return solvePartOne(fieldIn).toLong()
 }
 
 fun main() {
