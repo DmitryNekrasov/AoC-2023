@@ -175,13 +175,7 @@ fun solvePartTwo(graph: Map<String, List<String>>, nameToModule: Map<String, Mod
 
     fun lcm(a: Long, b: Long): Long = a / gcd(a, b) * b
 
-    fun lcm(nums: List<Long>): Long {
-        var result = 1L
-        for (num in nums) {
-            result = lcm(result, num)
-        }
-        return result
-    }
+    fun lcm(nums: List<Long>): Long = nums.fold(1L) { acc, value -> lcm(acc, value) }
 
     return lcm(periods)
 }
