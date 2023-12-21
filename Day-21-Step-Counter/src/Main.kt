@@ -2,7 +2,8 @@ import java.io.File
 import java.util.LinkedList
 import java.util.Queue
 
-fun solvePartOne(field: List<CharArray>): Int {
+fun solvePartOne(fieldIn: List<CharArray>): Int {
+    val field = fieldIn.map { it.copyOf() }
     val limit = 64
     fun getStart(field: List<CharArray>) =
         field.withIndex().filter { (_, line) -> 'S' in line }.map { (i, line) -> i to line.indexOf('S') }.first()
@@ -26,8 +27,15 @@ fun solvePartOne(field: List<CharArray>): Int {
     return 1 + field.sumOf { it.count { c -> c == 'E' } }
 }
 
+fun solvePartTwo(fieldIn: List<CharArray>): Long {
+    val field = fieldIn.map { it.copyOf() }
+    println(field.joinToString("\n") { String(it) })
+
+    return -1
+}
 
 fun main() {
     val field = File("input.txt").useLines { it.toList() }.map { it.toCharArray() }
     println(solvePartOne(field))
+    println(solvePartTwo(field))
 }
