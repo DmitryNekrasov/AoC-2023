@@ -8,7 +8,7 @@ fun solvePartOne(fieldIn: List<CharArray>): Int {
         field.withIndex().filter { (_, line) -> 'S' in line }.map { (i, line) -> i to line.indexOf('S') }.first()
     val (startRow, startCol) = getStart(field)
     bfs(field, startRow, startCol, 64)
-    return 1 + field.sumOf { it.count { c -> c == 'E' } }
+    return field.sumOf { it.count { c -> c == 'E' } }
 }
 
 fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int) {
@@ -17,6 +17,7 @@ fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int) {
     val m = field.first().size
     val queue: Queue<Triple<Int, Int, Int>> = LinkedList()
     queue.offer(Triple(startRow, startCol, 0))
+    field[startRow][startCol] = 'E'
     while (queue.isNotEmpty()) {
         val (i, j, stepCount) = queue.poll()
         for ((di, dj) in listOf(0 to 1, 0 to -1, 1 to 0, -1 to 0)) {
