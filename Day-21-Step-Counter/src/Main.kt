@@ -23,7 +23,9 @@ fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int) {
         for ((di, dj) in listOf(0 to 1, 0 to -1, 1 to 0, -1 to 0)) {
             val nextI = i + di
             val nextJ = j + dj
-            if (nextI in 0..<n && nextJ in 0..<m && field[nextI][nextJ] != '#' && field[nextI][nextJ] == '.' && stepCount < limit) {
+            if (nextI in 0..<n && nextJ in 0..<m && field[nextI][nextJ] != '#' &&
+                (field[nextI][nextJ] == '.' || field[nextI][nextJ] == 'S') && stepCount < limit
+            ) {
                 field[nextI][nextJ] = opposite(field[i][j])
                 queue.offer(Triple(nextI, nextJ, stepCount + 1))
             }
@@ -31,11 +33,32 @@ fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int) {
     }
 }
 
-fun solvePartTwo(fieldIn: List<CharArray>): Long {
-    val field = fieldIn.map { it.copyOf() }
-    println(field.joinToString("\n") { String(it) })
+fun fullCount(n: Int): Pair<Long, Long> {
+    val a = mutableListOf(1L, 0L)
+    var x = 0L
+    for (i in 0..<n) {
+        a[i % 2] = a[i % 2] + x
+        x += 4
+    }
+    return a[0] to a[1]
+}
 
-    return solvePartOne(fieldIn).toLong()
+fun solvePartTwo(fieldIn: List<CharArray>): Long {
+    val n = fieldIn.size
+    val limit = 130
+    for (i in 0..<3) {
+        for (j in 0..<3) {
+            val field = fieldIn.map { it.copyOf() }
+            bfs(field, i * (n / 2), j * (n / 2), limit)
+            println(field.joinToString("\n") { String(it) })
+            println()
+        }
+    }
+
+    val (eNumber, oNumber) = fullCount(4);
+    println("eNumber = $eNumber, oNumber = $oNumber")
+
+    return -1L
 }
 
 fun main() {
