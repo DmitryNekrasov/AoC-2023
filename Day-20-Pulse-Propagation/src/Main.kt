@@ -48,6 +48,7 @@ class FlipFlop(name: String) : Module(name) {
 
 class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
     private val highInputs = HashSet<String>()
+    var sawHigh = false
 
     override fun process(from: Module, signal: Signal): Signal {
         if (signal == Signal.None) throw RuntimeException()
@@ -64,14 +65,12 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
     override fun reset() {
         super.reset()
         highInputs.clear()
+        sawHigh = false
     }
 
     override fun incHigh() {
         super.incHigh()
-    }
-
-    override fun incLow() {
-        super.incLow()
+        sawHigh = true
     }
 }
 
@@ -160,11 +159,31 @@ fun reset(nameToModule: Map<String, Module>) {
 }
 
 fun solvePartTwo(graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
-    reset(nameToModule)
-    val inputToLx = inputToLx(graph)
-    println(inputToLx)
+    val inputToLx = inputToLx(graph).map { nameToModule[it]!! }.map { it as Conjunction }
+    val periods = mutableListOf<Long>()
+    for (module in inputToLx) {
+        reset(nameToModule)
+        var count = 0L
+        while (!module.sawHigh) {
+            pushButton(graph, nameToModule)
+            count++
+        }
+        periods.add(count)
+    }
 
-    return -1L
+    fun gcd(a: Long, b: Long): Long = if (b == 0L) a else gcd(b, a % b)
+
+    fun lcm(a: Long, b: Long): Long = a / gcd(a, b) * b
+
+    fun lcm(nums: List<Long>): Long {
+        var result = 1L
+        for (num in nums) {
+            result = lcm(result, num)
+        }
+        return result
+    }
+
+    return lcm(periods)
 }
 
 fun main() {
