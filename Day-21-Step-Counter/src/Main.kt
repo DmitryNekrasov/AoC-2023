@@ -2,6 +2,8 @@ import java.io.File
 import java.util.LinkedList
 import java.util.Queue
 
+const val PART_TWO_STEP_NUMBER = 26_501_365
+
 fun solvePartOne(fieldIn: List<CharArray>): Int {
     val field = fieldIn.map { it.copyOf() }
     fun getStart(field: List<CharArray>) =
@@ -11,13 +13,13 @@ fun solvePartOne(fieldIn: List<CharArray>): Int {
     return field.sumOf { it.count { c -> c == 'E' } }
 }
 
-fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int) {
+fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int, initial: Char = 'E') {
     fun opposite(c: Char) = if (c == 'O') 'E' else 'O'
     val n = field.size
     val m = field.first().size
     val queue: Queue<Triple<Int, Int, Int>> = LinkedList()
     queue.offer(Triple(startRow, startCol, 0))
-    field[startRow][startCol] = 'E'
+    field[startRow][startCol] = initial
     while (queue.isNotEmpty()) {
         val (i, j, stepCount) = queue.poll()
         for ((di, dj) in listOf(0 to 1, 0 to -1, 1 to 0, -1 to 0)) {
@@ -33,10 +35,50 @@ fun bfs(field: List<CharArray>, startRow: Int, startCol: Int, limit: Int) {
     }
 }
 
-fun fullCount(n: Int): Pair<Long, Long> {
+fun full(fieldIn: List<CharArray>): Pair<Int, Int> { // O count, E count
+    val field = fieldIn.map { it.copyOf() }
+    val n = fieldIn.size
+    bfs(field, n / 2, n / 2, n)
+    return field.sumOf { it.count { c -> c == 'O' } } to field.sumOf { it.count { c -> c == 'E' } }
+}
+
+fun oNSEW(fieldIn: List<CharArray>): List<Int> {
+    val n = fieldIn.size
+    val result = mutableListOf<Int>()
+    for ((i, j) in listOf(0 to n / 2, n - 1 to n / 2, n / 2 to 0, n / 2 to n - 1)) {
+        val field = fieldIn.map { it.copyOf() }
+        bfs(field, i, j, n - 1, 'E')
+        result.add(field.sumOf { it.count { c -> c == 'O' } })
+    }
+    return result
+}
+
+fun eNWNESESW(fieldIn: List<CharArray>): List<Int> {
+    val n = fieldIn.size
+    val result = mutableListOf<Int>()
+    for ((i, j) in listOf(0 to 0, 0 to n - 1, n - 1 to n - 1, n - 1 to 0)) {
+        val field = fieldIn.map { it.copyOf() }
+        bfs(field, i, j, n / 2, 'E')
+        result.add(field.sumOf { it.count { c -> c == 'O' } })
+    }
+    return result
+}
+
+fun oNWNESESW(fieldIn: List<CharArray>): List<Int> {
+    val n = fieldIn.size
+    val result = mutableListOf<Int>()
+    for ((i, j) in listOf(0 to 0, 0 to n - 1, n - 1 to n - 1, n - 1 to 0)) {
+        val field = fieldIn.map { it.copyOf() }
+        bfs(field, i, j, n - 1 + n / 2, 'O')
+        result.add(field.sumOf { it.count { c -> c == 'O' } })
+    }
+    return result
+}
+
+fun fullCount(n: Int): Pair<Long, Long> { // O count, E count
     val a = mutableListOf(1L, 0L)
     var x = 0L
-    for (i in 0..<n) {
+    for (i in 0..<n - 1) {
         a[i % 2] = a[i % 2] + x
         x += 4
     }
@@ -44,19 +86,27 @@ fun fullCount(n: Int): Pair<Long, Long> {
 }
 
 fun solvePartTwo(fieldIn: List<CharArray>): Long {
-    val n = fieldIn.size
-    val limit = 130
-    for (i in 0..<3) {
-        for (j in 0..<3) {
-            val field = fieldIn.map { it.copyOf() }
-            bfs(field, i * (n / 2), j * (n / 2), limit)
-            println(field.joinToString("\n") { String(it) })
-            println()
-        }
-    }
+    val size = fieldIn.size
+    val n = (PART_TWO_STEP_NUMBER - size / 2) / size + 1
+    println("n = $n")
 
-    val (eNumber, oNumber) = fullCount(4);
-    println("eNumber = $eNumber, oNumber = $oNumber")
+    val (oFull, eFull) = full(fieldIn)
+    println("oFull = $oFull, eFull = $eFull")
+
+    val (oNumber, eNumber) = fullCount(n)
+    println("oNumber = $oNumber, eNumber = $eNumber")
+
+    val oNSEW = oNSEW(fieldIn)
+    println("oNSEW = $oNSEW")
+
+    val eNWNESESW = eNWNESESW(fieldIn)
+    println("eNWNESESW = $eNWNESESW")
+
+    val oNWNESESW = oNWNESESW(fieldIn)
+    println("oNWNESESW = $oNWNESESW")
+
+    val ans = oNSEW.sum() + (n - 1).toLong() * eNWNESESW.sum() + (n - 2).toLong() * oNWNESESW.sum() + oNumber * oFull + eNumber * eFull
+    println("ans = $ans")
 
     return -1L
 }
