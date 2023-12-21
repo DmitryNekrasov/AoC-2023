@@ -12,8 +12,8 @@ abstract class Module(val name: String) {
     abstract fun process(from: Module, signal: Signal): Signal
 
     open fun reset() {
-        lowCounter = 0
-        highCounter = 0
+        lowCounter = 0L
+        highCounter = 0L
     }
 }
 
@@ -22,10 +22,10 @@ class FlipFlop(name: String) : Module(name) {
 
     override fun process(from: Module, signal: Signal): Signal {
         return when (signal) {
-            Signal.High -> Signal.None.also { highCounter++ }
+            Signal.High -> Signal.None.also { from.highCounter++ }
             Signal.Low -> {
                 isOn = !isOn
-                lowCounter++
+                from.lowCounter++
                 if (isOn) Signal.High else Signal.Low
             }
             else -> throw RuntimeException()
@@ -44,10 +44,10 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         if (signal == Signal.None) throw RuntimeException()
         if (signal == Signal.High) {
-            highCounter++
+            from.highCounter++
             highInputs.add(from.name)
         } else {
-            lowCounter++
+            from.lowCounter++
             highInputs.remove(from.name)
         }
         return if (highInputs.size == inputNumber) Signal.Low else Signal.High
@@ -61,14 +61,15 @@ class Conjunction(name: String, private val inputNumber: Int) : Module(name) {
 
 class Broadcaster(name: String) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
-        throw RuntimeException()
+        if (signal != Signal.Low) throw RuntimeException()
+        return signal
     }
 }
 
 class Terminal(name: String) : Module(name) {
     override fun process(from: Module, signal: Signal): Signal {
         if (signal == Signal.None) throw RuntimeException()
-        if (signal == Signal.Low) lowCounter++ else highCounter++
+        if (signal == Signal.Low) from.lowCounter++ else from.highCounter++
         return Signal.None
     }
 }
@@ -114,7 +115,9 @@ fun generateNameToModule(
 
 fun pushButton(graph: Map<String, List<String>>, nameToModule: Map<String, Module>) {
     val queue: Queue<Pair<Module, Signal>> = LinkedList()
-    queue.offer(nameToModule["broadcaster"]!! to Signal.Low)
+    val broadcaster = nameToModule["broadcaster"]!!
+    broadcaster.lowCounter += 1
+    queue.offer(broadcaster to Signal.Low)
     while (queue.isNotEmpty()) {
         val (from, signal) = queue.poll()
         for (toName in graph[from.name]!!) {
@@ -129,7 +132,7 @@ fun pushButton(graph: Map<String, List<String>>, nameToModule: Map<String, Modul
 
 fun solvePartOne(times: Int, graph: Map<String, List<String>>, nameToModule: Map<String, Module>): Long {
     repeat(times) { pushButton(graph, nameToModule) }
-    return (nameToModule.values.sumOf { it.lowCounter } + times) * nameToModule.values.sumOf { it.highCounter }
+    return nameToModule.values.sumOf { it.lowCounter } * nameToModule.values.sumOf { it.highCounter }
 }
 
 fun inputToLx(graph: Map<String, List<String>>): List<String> {
@@ -157,5 +160,5 @@ fun main() {
     val nameToModule = generateNameToModule(nameToType, conjunctionInputs)
 
     println(solvePartOne(1000, graph, nameToModule))
-//    println(solvePartTwo(graph, nameToModule))
+    println(solvePartTwo(graph, nameToModule))
 }
