@@ -35,7 +35,7 @@ fun parseBrick(brickString: String): Brick {
         }
 }
 
-fun solve(bricks: List<Brick>): Int {
+fun placeBricksOnTopOfEachOther(bricks: List<Brick>) {
     val (n, m) = bricks.fold(0 to 0) { acc, b ->
         max(acc.first, max(b.p1.x, b.p2.x)) to
                 max(acc.second, max(b.p1.y, b.p2.y))
@@ -72,14 +72,17 @@ fun solve(bricks: List<Brick>): Int {
             }
         }
     }
+}
 
-    bricks.joinToString("\n") { "$it, over: ${it.over.size}, under: ${it.under.size}" }
-        .also { println(it) }
-
+fun solvePartOne(bricks: List<Brick>): Int {
     return bricks.count { brick -> brick.under.all { it.over.size > 1 } }
 }
 
 fun main() {
-    val bricks = File("input.txt").useLines { it.toList() }.map { parseBrick(it) }.sortedBy { it.p1.z }
-    println(solve(bricks))
+    val bricks = File("input.txt")
+        .useLines { it.toList() }
+        .map { parseBrick(it) }
+        .sortedBy { it.p1.z }
+        .also { placeBricksOnTopOfEachOther(it) }
+    println(solvePartOne(bricks))
 }
