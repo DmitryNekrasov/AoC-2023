@@ -78,6 +78,19 @@ fun solvePartOne(bricks: List<Brick>): Int {
     return bricks.count { brick -> brick.under.all { it.over.size > 1 } }
 }
 
+fun solvePartTwo(bricks: List<Brick>): Int {
+    fun exclude(brick: Brick, excluded: HashSet<Brick> = HashSet()): HashSet<Brick> {
+        excluded.add(brick)
+        val toExclude = brick.under.filter { under -> under.over.all { it in excluded } }
+        excluded.addAll(toExclude)
+        for (to in toExclude) {
+            exclude(to, excluded)
+        }
+        return excluded
+    }
+    return bricks.sumOf { exclude(it).size - 1 }
+}
+
 fun main() {
     val bricks = File("input.txt")
         .useLines { it.toList() }
@@ -85,4 +98,5 @@ fun main() {
         .sortedBy { it.p1.z }
         .also { placeBricksOnTopOfEachOther(it) }
     println(solvePartOne(bricks))
+    println(solvePartTwo(bricks))
 }
