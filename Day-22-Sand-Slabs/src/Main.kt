@@ -24,7 +24,7 @@ fun parseBrick(brickString: String): Brick {
 }
 
 fun main() {
-    val bricks = File("input_simple_1.txt").useLines { it.toList() }.map { parseBrick(it) }
+    val bricks = File("input.txt").useLines { it.toList() }.map { parseBrick(it) }.sortedBy { it.p1.z }
 
     bricks.joinToString("\n") { it.toString() }
         .also { println(it) }
