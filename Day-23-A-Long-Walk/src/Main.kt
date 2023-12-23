@@ -18,7 +18,7 @@ fun crossroads(maze: List<String>): Pair<Int, Int> {
 }
 
 
-fun solve(mazeStrings: List<String>): Int {
+fun solvePartOne(mazeStrings: List<String>): Int {
     data class Point(val i: Int, val j: Int)
 
     val finish = Point(mazeStrings.lastIndex, mazeStrings.first().lastIndex - 1)
@@ -61,5 +61,5 @@ fun main() {
     val maze = File("input.txt").useLines { it.toList() }
     val (direct, reverse) = crossroads(maze)
     println("direct = $direct, reverse = $reverse")
-    println(solve(maze))
+    println(solvePartOne(maze))
 }
