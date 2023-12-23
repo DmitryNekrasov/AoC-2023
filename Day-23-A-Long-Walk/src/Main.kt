@@ -26,7 +26,7 @@ fun crossroads(maze: List<String>): Map<Point, Int> {
     return result.withIndex().associateBy({ it.value }, { it.index })
 }
 
-fun compress(maze: List<String>): Array<MutableList<Pair<Int, Int>>> {
+fun compress(maze: List<String>, isPartTwo: Boolean): Array<MutableList<Pair<Int, Int>>> {
     val crossroads = crossroads(maze)
 
     val n = maze.size
@@ -54,7 +54,12 @@ fun compress(maze: List<String>): Array<MutableList<Pair<Int, Int>>> {
 
     fun edges(point: Point): List<Triple<Int, Int, Int>> { // from, to, distance
         val (i, j) = point
-        return listOf(Point(i, j + 1), Point(i + 1, j)).filter { it.isValid() }.map { edge(point, it) }
+        val candidates = mutableListOf(Point(i, j + 1), Point(i + 1, j))
+        if (isPartTwo) {
+            candidates.add(Point(i, j - 1))
+            candidates.add(Point(i - 1, j))
+        }
+        return candidates.filter { it.isValid() }.map { edge(point, it) }
     }
 
     val crossroadsNumber = crossroads.size
@@ -68,8 +73,8 @@ fun compress(maze: List<String>): Array<MutableList<Pair<Int, Int>>> {
     return graph
 }
 
-fun solvePartOne(maze: List<String>): Int {
-    val graph = compress(maze)
+fun solve(maze: List<String>, isPartTwo: Boolean = false): Int {
+    val graph = compress(maze, isPartTwo)
     val n = graph.size
     val visited = BooleanArray(n) { false }
     var result = 0
@@ -91,6 +96,7 @@ fun solvePartOne(maze: List<String>): Int {
 }
 
 fun main() {
-    val maze = File("input_simple_1.txt").useLines { it.toList() }
-    println(solvePartOne(maze))
+    val maze = File("input.txt").useLines { it.toList() }
+    println(solve(maze))
+    println(solve(maze, isPartTwo = true))
 }
