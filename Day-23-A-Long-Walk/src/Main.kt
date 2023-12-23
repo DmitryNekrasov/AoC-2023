@@ -40,6 +40,7 @@ fun solve(mazeStrings: List<String>): Int {
 
         var distance = 1
         while (current != finish) {
+            maze[current.i][current.j] = '#'
             val next = current.next()
             if (next.isEmpty()) return 0
             if (next.size == 2) return distance + max(
