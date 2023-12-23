@@ -3,12 +3,13 @@ import java.io.File
 data class Point(val i: Int, val j: Int)
 
 fun Char.isFree() = this != '#'
+
 fun Boolean.toInt() = if (this) 1 else 0
 
-fun crossroads(maze: List<String>): List<Point> {
+fun crossroads(maze: List<String>): Map<Point, Int> {
     val n = maze.size
     val m = maze.first().length
-    val result = mutableListOf(Point(0, 1), Point(n - 1, m - 2))
+    val result = mutableListOf(Point(0, 1))
     for (i in 1..<n - 1) {
         for (j in 1..<m - 1) {
             if (maze[i][j] == '.') {
@@ -20,21 +21,61 @@ fun crossroads(maze: List<String>): List<Point> {
             }
         }
     }
-    return result
+    result.add(Point(n - 1, m - 2))
+    return result.withIndex().associateBy({ it.value }, { it.index })
 }
 
-fun compress(maze: List<String>) {
+fun compress(maze: List<String>): Array<MutableList<Pair<Int, Int>>> {
     val crossroads = crossroads(maze)
-    println("crossroads number = ${crossroads.size}")
-    println(crossroads)
+
+    val n = maze.size
+    val m = maze.first().length
+
+    fun Point.isValid() = i in 0..<n && j in 0..<m && maze[i][j].isFree()
+
+    fun Point.next(prev: Point): Point {
+        return listOf(Point(i + 1, j), Point(i - 1, j), Point(i, j + 1), Point(i, j - 1))
+            .filter { it.isValid() }.first { it != prev }
+    }
+
+    fun edge(last: Point, point: Point): Triple<Int, Int, Int> {
+        var prev = last
+        var current = point
+        var distance = 1
+        while (current !in crossroads) {
+            distance++
+            val next = current.next(prev)
+            prev = current
+            current = next
+        }
+        return Triple(crossroads[last]!!, crossroads[current]!!, distance)
+    }
+
+    fun edges(point: Point): List<Triple<Int, Int, Int>> { // from, to, distance
+        val (i, j) = point
+        return listOf(Point(i, j + 1), Point(i + 1, j)).filter { it.isValid() }.map { edge(point, it) }
+    }
+
+    val crossroadsNumber = crossroads.size
+    val graph = Array(crossroadsNumber) { mutableListOf<Pair<Int, Int>>() }
+    for ((point, _) in crossroads) {
+        for ((from, to, distance) in edges(point)) {
+            graph[from].add(to to distance)
+        }
+    }
+
+    return graph
 }
 
 fun solvePartOne(maze: List<String>): Int {
-    compress(maze)
+    val graph = compress(maze)
+    graph.joinToString("\n") { it.toString() }
+        .also { println(it) }
+
     return -1
 }
 
 fun main() {
-    val maze = File("input.txt").useLines { it.toList() }
+    val maze = File("input_simple_1.txt").useLines { it.toList() }
     println(solvePartOne(maze))
 }
