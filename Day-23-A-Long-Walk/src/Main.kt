@@ -1,4 +1,5 @@
 import java.io.File
+import kotlin.math.max
 
 data class Point(val i: Int, val j: Int)
 
@@ -69,10 +70,24 @@ fun compress(maze: List<String>): Array<MutableList<Pair<Int, Int>>> {
 
 fun solvePartOne(maze: List<String>): Int {
     val graph = compress(maze)
-    graph.joinToString("\n") { it.toString() }
-        .also { println(it) }
-
-    return -1
+    val n = graph.size
+    val visited = BooleanArray(n) { false }
+    var result = 0
+    fun backtrack(from: Int, total: Int) {
+        if (from == n - 1) {
+            result = max(result, total)
+        } else {
+            visited[from] = true
+            for ((to, distance) in graph[from]) {
+                if (!visited[to]) {
+                    backtrack(to, total + distance)
+                }
+            }
+            visited[from] = false
+        }
+    }
+    backtrack(0, 0)
+    return result
 }
 
 fun main() {
