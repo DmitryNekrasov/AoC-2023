@@ -43,7 +43,7 @@ fun solve(mazeStrings: List<String>): Int {
             maze[current.i][current.j] = '#'
             val next = current.next()
             if (next.isEmpty()) return 0
-            if (next.size == 2) return distance + max(
+            if (next.size > 1) return distance + max(
                 backtrack(current, next.first(), maze),
                 backtrack(current, next.last(), maze)
             )
