@@ -1,3 +1,4 @@
+import org.ejml.simple.SimpleMatrix
 import java.io.File
 import java.math.BigDecimal
 import java.math.MathContext
@@ -82,13 +83,39 @@ fun intersect(line0: Line, line1: Line, line2: Line): Pair<Point, BigDecimal> {
     val p2 = line2.p - line0.p
     val v1 = line1.velocityPoint - line0.velocityPoint
     val v2 = line2.velocityPoint - line0.velocityPoint
-
-    return Point(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO) to BigDecimal("1")
+    val matrix = SimpleMatrix(
+        arrayOf(
+            doubleArrayOf(p1.x.toDouble(), v1.x.toDouble(), -v2.x.toDouble()),
+            doubleArrayOf(p1.y.toDouble(), v1.y.toDouble(), -v2.y.toDouble()),
+            doubleArrayOf(p1.z.toDouble(), v1.z.toDouble(), -v2.z.toDouble())
+        )
+    )
+    val vector = SimpleMatrix(
+        arrayOf(
+            doubleArrayOf(p2.x.toDouble()),
+            doubleArrayOf(p2.y.toDouble()),
+            doubleArrayOf(p2.z.toDouble())
+        )
+    )
+    val result = matrix.invert().mult(vector)
+    val t2 = BigDecimal.valueOf(result.get(2, 0))
+    return Point(
+        line2.p.x + t2 * line2.velocityPoint.x,
+        line2.p.y + t2 * line2.velocityPoint.y,
+        line2.p.z + t2 * line2.velocityPoint.z
+    ) to t2
 }
 
 fun solvePartTwo(lines: List<Line>): Long {
-
-    return -1
+    val (p1, t1) = intersect(lines[0], lines[1], lines[2])
+    val (p2, t2) = intersect(lines[0], lines[1], lines[3])
+    val vx = (p2.x - p1.x) / (t2 - t1)
+    val vy = (p2.y - p1.y) / (t2 - t1)
+    val vz = (p2.z - p1.z) / (t2 - t1)
+    val x = p1.x - t1 * vx
+    val y = p1.y - t1 * vy
+    val z = p1.z - t1 * vz
+    return (x + y + z).toLong()
 }
 
 fun parseLine(line: String): Line {
