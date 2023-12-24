@@ -2,13 +2,15 @@ import java.io.File
 import java.math.BigDecimal
 import java.math.MathContext
 
-val BOTTOM_LIMIT = BigDecimal("200000000000000")
-val UPPER_LIMIT = BigDecimal("400000000000000")
-
 data class Point(val x: BigDecimal, val y: BigDecimal, val z: BigDecimal) {
     operator fun plus(other: Point) = Point(x + other.x, y + other.y, z + other.z)
 
     fun inLimit() = x in BOTTOM_LIMIT..UPPER_LIMIT && y in BOTTOM_LIMIT..UPPER_LIMIT
+
+    companion object {
+        val BOTTOM_LIMIT = BigDecimal("200000000000000")
+        val UPPER_LIMIT = BigDecimal("400000000000000")
+    }
 }
 
 fun distance(p: Point, q: Point): BigDecimal =
