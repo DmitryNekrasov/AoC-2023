@@ -5,6 +5,8 @@ import java.math.MathContext
 data class Point(val x: BigDecimal, val y: BigDecimal, val z: BigDecimal) {
     operator fun plus(other: Point) = Point(x + other.x, y + other.y, z + other.z)
 
+    operator fun minus(other: Point) = Point(x - other.x, y - other.y, z - other.z)
+
     fun inLimit() = x in BOTTOM_LIMIT..UPPER_LIMIT && y in BOTTOM_LIMIT..UPPER_LIMIT
 
     companion object {
@@ -61,7 +63,7 @@ class Line(private val p: Point, velocityPoint: Point) {
     }
 }
 
-fun solve(lines: List<Line>): Int {
+fun solvePartOne(lines: List<Line>): Int {
     var result = 0
     for (i in lines.indices) {
         val line1 = lines[i]
@@ -75,6 +77,11 @@ fun solve(lines: List<Line>): Int {
     return result
 }
 
+fun solvePartTwo(lines: List<Line>): Long {
+
+    return -1
+}
+
 fun parseLine(line: String): Line {
     fun parsePoint(pointString: String) =
         pointString.split(", ").map { BigDecimal.valueOf(it.trim().toLong()) }.let { (x, y, z) -> Point(x, y, z) }
@@ -83,5 +90,6 @@ fun parseLine(line: String): Line {
 
 fun main() {
     val lines = File("input.txt").useLines { it.toList() }.map { parseLine(it) }
-    println(solve(lines))
+    println(solvePartOne(lines))
+    println(solvePartTwo(lines))
 }
