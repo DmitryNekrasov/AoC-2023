@@ -24,7 +24,7 @@ data class Direction(val x: Int, val y: Int)
 
 fun direction(p: Point, q: Point) = Direction((p.x - q.x).signum(), (p.y - q.y).signum())
 
-class Line(private val p: Point, velocityPoint: Point) {
+class Line(val p: Point, val velocityPoint: Point) {
     private val a: BigDecimal
     private val b: BigDecimal
     private val c: BigDecimal
@@ -75,6 +75,15 @@ fun solvePartOne(lines: List<Line>): Int {
         }
     }
     return result
+}
+
+fun intersect(line0: Line, line1: Line, line2: Line): Pair<Point, BigDecimal> {
+    val p1 = line1.p - line0.p
+    val p2 = line2.p - line0.p
+    val v1 = line1.velocityPoint - line0.velocityPoint
+    val v2 = line2.velocityPoint - line0.velocityPoint
+
+    return Point(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO) to BigDecimal("1")
 }
 
 fun solvePartTwo(lines: List<Line>): Long {
