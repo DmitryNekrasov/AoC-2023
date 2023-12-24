@@ -16,11 +16,19 @@ data class Direction(val x: Int, val y: Int)
 
 fun direction(p: Point, q: Point) = Direction((p.x - q.x).signum(), (p.y - q.y).signum())
 
-class Line(private val p: Point, q: Point) {
-    private val a = p.y - q.y
-    private val b = q.x - p.x
-    private val c = -a * p.x - b * p.y
-    private val direction = direction(p, q)
+class Line(private val p: Point, velocity: Point) {
+    private val a: BigDecimal
+    private val b: BigDecimal
+    private val c: BigDecimal
+    private val direction: Direction
+
+    init {
+        val q = p + velocity
+        a = p.y - q.y
+        b = q.x - p.x
+        c = -a * p.x - b * p.y
+        direction = direction(p, q)
+    }
 
     private infix fun parallel(other: Line) = (det(a, b, other.a, other.b).abs() < EPS).also { if (it) println("PARALLEL") }
 
@@ -28,7 +36,7 @@ class Line(private val p: Point, q: Point) {
             det(a, c, other.a, other.c).abs() < EPS &&
             det(b, c, other.b, other.c).abs() < EPS).also { if (it) println("EQUIVALENT") }
 
-    private infix fun intersect(other: Line): Point {
+    private fun intersect(other: Line): Point {
         val zn = det(a, b, other.a, other.b)
         return Point(-det(c, b, other.c, other.b) / zn, -det(a, c, other.a, other.c) / zn, BigDecimal.ZERO)
     }
@@ -76,8 +84,7 @@ fun solve(lines: List<Line>): Int {
 fun parseLine(line: String): Line {
     fun parsePoint(pointString: String) =
         pointString.split(", ").map { BigDecimal.valueOf(it.trim().toLong()) }.let { (x, y, z) -> Point(x, y, z) }
-    val (p1, velocity) = line.split(" @ ").map { parsePoint(it) }
-    return Line(p1, p1 + velocity)
+    return line.split(" @ ").map { parsePoint(it) }.let { (p1, velocity) -> Line(p1, velocity) }
 }
 
 fun main() {
