@@ -1,14 +1,15 @@
 import java.io.File
+import java.math.BigDecimal
 import java.math.BigInteger
 
 data class Point(val x: Long, val y: Long, val z: Long) {
     operator fun plus(other: Point) = Point(x + other.x, y + other.y, z + other.z)
 }
 
-data class Line(val p: Point, val q: Point) {
-    val a = p.y - q.y
-    val b = q.x - p.x
-    val c = -a * p.x - b * p.y
+class Line(p: Point, q: Point) {
+    val a = BigDecimal.valueOf(p.y) - BigDecimal.valueOf(q.y)
+    val b = BigDecimal.valueOf(q.x) - BigDecimal.valueOf(p.x)
+    val c = -a * BigDecimal.valueOf(p.x) - b * BigDecimal.valueOf(p.y)
 
     override fun toString(): String {
         return "a = $a, b = $b, c = $c"
